@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Imagens</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div id="header-placeholder"></div>
+
+    <main class="page-content">
+        <div class="content-card">
+            <div class="card-inner" id="imageConverterCard">
+                <h1>Conversor de Imagens</h1>
+                <p>Selecione uma imagem e o formato de saída.</p>
+                
+                <label for="imageInput" class="custom-file-upload">Clique para escolher o arquivo</label>
+                <input type="file" id="imageInput" accept="image/*">
+                <div id="fileName">Nenhum arquivo selecionado</div>
+
+                <div class="options">
+                    <label for="formatSelect">Converter para:</label>
+                    <select id="formatSelect">
+                        <option value="png">PNG</option>
+                        <option value="jpeg">JPEG</option>
+                        <option value="webp">WEBP</option>
+                    </select>
+                </div>
+                <button id="action-btn">Converter e Baixar</button>
+            </div>
+        </div>
+    </main>
+    
+    <script src="../script.js"></script>
+</body>
+</html>
