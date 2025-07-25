@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adicionar Marca d'Água</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link rel="stylesheet" href="../css/common.css" />
+    <link rel="stylesheet" href="../css/image-watermark.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="page-content">
+        <div class="watermark-tool-layout">
+            
+            <div class="preview-column">
+<div class="file-upload-group" id="upload-area-watermark">
+    <h1>Adicionar Marca d'Água</h1>
+    <p>Carregue uma imagem para aplicar um texto ou logo.</p>
+    
+    <label for="main-image-input" class="custom-file-upload">Clique para escolher o arquivo</label>
+    <input type="file" id="main-image-input" accept="image/*">
+    <div id="file-name-display" class="file-name-display">Nenhum arquivo selecionado</div>
+</div>
+                <div id="canvas-wrapper" class="hidden">
+                    <canvas id="image-canvas"></canvas>
+                </div>
+            </div>
+
+            <div class="controls-column hidden" id="controls-panel">
+                <div class="card-inner" id="imageWatermarkCard">
+                    <h2>Controles da Marca d'Água</h2>
+
+                    <div class="control-group">
+                        <div class="tabs">
+                            <button class="tab-btn active" data-type="text">Texto</button>
+                            <button class="tab-btn" data-type="image">Imagem</button>
+                        </div>
+
+                        <div id="text-controls" class="tab-content active">
+                            <input type="text" id="watermark-text" placeholder="Digite seu texto aqui...">
+                            <label>Cor: <input type="color" id="watermark-color" value="#FFFFFF"></label>
+                        </div>
+
+                        <div id="image-controls" class="tab-content">
+                            <label for="watermark-image-input" class="secondary-button">Carregar Logo</label>
+                            <input type="file" id="watermark-image-input" accept="image/*" />
+                            <span id="logo-name">Nenhum logo carregado.</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="size-slider">Tamanho: <span id="size-value">30px</span></label>
+                        <input type="range" id="size-slider" min="10" max="200" value="30">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="opacity-slider">Opacidade: <span id="opacity-value">50%</span></label>
+                        <input type="range" id="opacity-slider" min="0" max="100" value="50">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Posição:</label>
+                        <div class="position-grid">
+                            <button data-position="top-left"><i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-left"></i></button>
+                            <button data-position="top-center"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button data-position="top-right"><i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-right"></i></button>
+                            <button data-position="center-left"><i class="fa-solid fa-arrow-left"></i></button>
+                            <button data-position="center" class="active"><i class="fa-solid fa-crosshairs"></i></button>
+                            <button data-position="center-right"><i class="fa-solid fa-arrow-right"></i></button>
+                            <button data-position="bottom-left"><i class="fa-solid fa-arrow-down"></i><i class="fa-solid fa-arrow-left"></i></button>
+                            <button data-position="bottom-center"><i class="fa-solid fa-arrow-down"></i></button>
+                            <button data-position="bottom-right"><i class="fa-solid fa-arrow-down"></i><i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="output-controls">
+                        <select id="format-select">
+                            <option value="jpeg">JPEG</option>
+                            <option value="png">PNG</option>
+                        </select>
+                        <button id="download-btn" class="main-action"><i class="fa-solid fa-download"></i> Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="../js/common.js" defer></script>
+    <script src="../js/image-watermark.js" defer></script> 
+</body>
+</html>

@@ -1,4 +1,6 @@
 /* style.css - Novo Tema Escuro */
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+
 :root {
     --gradient: linear-gradient(135deg, #8ab4f8, #c58af9, #f48aab);
     --text-color: #e4e4e4;
@@ -7,14 +9,82 @@
     --input-bg: rgba(40, 40, 40, 0.8);
     --accent-color: #8ab4f8;
     --header-height: 70px;
+    --font-family: 'Lexend', sans-serif;
+}
+
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family);
 }
 
 body {
-    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-family: "Google Sans", sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
     padding-top: var(--header-height);
+}
+
+.main-nav .nav-trigger.section-active {
+    color: var(--accent-color); /* Usa a cor de destaque que já definimos */
+}
+
+/* 1. O container do dropdown precisa de position: relative */
+.dropdown {
+    position: relative;
+}
+
+/* 2. O menu fica escondido por padrão */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 150%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f1f1f;
+    border-radius: 8px;
+    padding: 10px 0;
+    list-style: none;
+    min-width: 200px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 100;
+    animation: fadeIn 0.2s ease-out;
+}
+.dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    white-space: nowrap;
+}
+
+/* 3. A classe .show, adicionada pelo JS, torna o menu visível */
+.dropdown-menu.show {
+    display: block;
+}
+
+/* 4. Estilo para o link ativo DENTRO do menu */
+.dropdown-menu .nav-link.active {
+    background-color: rgba(138, 180, 248, 0.1);
+    color: var(--accent-color);
+}
+
+/* 5. Estilo para o gatilho (ex: "Áudio ▼") quando uma de suas páginas está ativa */
+.main-nav .nav-trigger.section-active {
+    color: var(--accent-color);
+    opacity: 1;
+}
+
+/* Animação simples para o menu aparecer */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Estilo para o gatilho (ex: "Áudio ▼") quando uma de suas páginas está ativa */
+.main-nav .nav-trigger.section-active {
+    color: var(--accent-color);
 }
 
 /* Header Injetado e Dropdown */
@@ -35,7 +105,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 40px;
+    padding: 0 5rem;
+
     box-sizing: border-box;
 }
 
@@ -46,7 +117,7 @@ body {
     text-decoration: none;
 }
 
-.main-nav ul {
+.nav-list {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -54,12 +125,15 @@ body {
     align-items: center;
 }
 
-.main-nav li { margin-left: 30px; }
+.dropdown{ margin-left: 30px; }
+
+.nav-link{
+    margin-bottom: 5px;
+}
 
 .main-nav .nav-link, .nav-trigger {
     color: var(--text-color);
     text-decoration: none;
-    padding: 5px 0;
     transition: color 0.3s;
     cursor: pointer;
     position: relative;
@@ -178,5 +252,39 @@ button#action-btn {
 button#action-btn:hover { background-position: 100% 0; }
 
 .options { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; }
+
+/* Adicione ao final de /css/common.css */
+
+/* Estilo padronizado para upload de arquivos */
+.file-upload-group {
+    margin-bottom: 25px;
+}
+
+label.custom-file-upload {
+    display: block;
+    padding: 15px;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    text-align: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+label.custom-file-upload:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--accent-color);
+}
+
+.file-upload-group input[type="file"] {
+    display: none; /* O input real fica escondido */
+}
+
+.file-upload-group .file-name-display {
+    font-size: 0.9rem;
+    opacity: 0.6;
+    min-height: 1.2em;
+    text-align: center;
+}
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

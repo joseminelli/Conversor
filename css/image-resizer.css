@@ -1,0 +1,250 @@
+/* /css/image-resizer.css */
+.hidden {
+  display: none !important;
+}
+
+#upload-area-resizer {
+  text-align: center;
+  padding: 40px 20px;
+}
+#upload-area-resizer h1 {
+  margin-bottom: 10px;
+}
+#upload-area-resizer p {
+  margin-bottom: 30px;
+  opacity: 0.7;
+}
+.upload-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 25px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+  background: var(--gradient);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.upload-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(138, 180, 248, 0.2);
+}
+#image-file-input {
+  display: none;
+}
+#editor-area-resizer {
+  animation: fadeIn 0.5s;
+}
+
+.preview-container {
+  width: 100%;
+  max-height: 400px;
+  background-color: #16171a;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#image-canvas {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+}
+#image-canvas.cropping {
+  cursor: crosshair;
+}
+
+.controls-crop {
+  background: #2a2b32;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.toggle-switch {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 10px;
+  font-size: 1rem;
+}
+.toggle-switch input {
+  display: none;
+}
+.toggle-switch .slider {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background-color: #45464e;
+  border-radius: 22px;
+  transition: background-color 0.3s;
+}
+.toggle-switch .slider::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+.toggle-switch input:checked + .slider {
+  background-color: var(--accent-color);
+}
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(18px);
+}
+
+#crop-controls {
+  margin-top: 15px;
+}
+#crop-controls .instruction {
+  font-size: 0.9rem;
+  opacity: 0.6;
+}
+.secondary-action {
+  background: none;
+  border: 1px solid #45464e;
+  color: #ccc;
+  padding: 8px 15px;
+  border-radius: 6px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.secondary-action:hover {
+  background-color: #45464e;
+}
+
+.info-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  background: #2a2b32;
+}
+.dimension-box {
+  text-align: center;
+}
+.dimension-box .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  opacity: 0.6;
+  display: block;
+  margin-bottom: 5px;
+}
+.dimension-box .dimensions {
+  font-size: 1.1rem;
+  color: #fff;
+}
+.arrow-icon {
+  font-size: 1.5rem;
+  color: var(--accent-color);
+  opacity: 0.5;
+}
+
+.controls-resize {
+  margin-bottom: 25px;
+  text-align: center;
+}
+.controls-resize label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+#resize-slider {
+  width: 100%;
+  cursor: pointer;
+}
+
+.output-controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  align-items: center;
+}
+.format-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #36373f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0 15px;
+  border-radius: 6px;
+}
+.format-selector label {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+.format-selector select {
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 10px 5px;
+  margin-bottom: 0 !important;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.output-controls .main-action {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--gradient);
+  color: #fff;
+  font-weight: 500;
+  border: none;
+  transition: filter 0.2s;
+}
+.output-controls .main-action:hover {
+  filter: brightness(1.1);
+}
+.output-controls i {
+  margin-right: 8px;
+}
+
+/* Adicione ao final de /css/image-resizer.css */
+
+.quality-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #36373f;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: 6px;
+}
+
+.quality-selector label {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.quality-selector input[type="range"] {
+    width: 100px;
+}
+
+.quality-selector span {
+    font-size: 0.9rem;
+    font-family: 'Courier New', Courier, monospace;
+    min-width: 35px;
+    text-align: right;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

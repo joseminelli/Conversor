@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conversor de Áudio e Volume</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link rel="stylesheet" href="../css/common.css" />
+    <link rel="stylesheet" href="../css/audio-converter.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="page-content">
+        <div class="content-card">
+            <div class="card-inner" id="audioConverterCard">
+                <div id="upload-area">
+                    <h1>Conversor de Áudio</h1>
+                    <p>Altere o formato e o volume do seu áudio.</p>
+                    <label for="audio-file-input" class="upload-button">
+                        <i class="fa-solid fa-upload"></i> Escolher Arquivo de Áudio
+                    </label>
+                    <input type="file" id="audio-file-input" accept="audio/*" />
+                </div>
+
+                <div id="editor-area" class="hidden">
+                    <div id="waveform-wrapper">
+                        <canvas id="waveform-canvas"></canvas>
+                    </div>
+                    <div class="controls-wrapper">
+                        <div class="control-group">
+                            <label for="volume-slider">Volume: <span id="volume-value">100%</span></label>
+                            <input type="range" id="volume-slider" min="0" max="200" value="100">
+                        </div>
+
+                        <div class="output-controls">
+                            <div class="format-selector">
+                                <label for="format-select">Formato:</label>
+                                <select id="format-select">
+                                    <option value="mp3">MP3</option>
+                                    <option value="wav">WAV</option>
+                                </select>
+                            </div>
+                             <div class="format-selector" id="bitrate-section">
+                                <label for="bitrate-select">Qualidade:</label>
+                                <select id="bitrate-select">
+                                    <option value="128">128 kbps</option>
+                                    <option value="192" selected>192 kbps</option>
+                                    <option value="320">320 kbps</option>
+                                </select>
+                            </div>
+                            <button id="process-btn" class="main-action"><i class="fa-solid fa-cogs"></i> Processar e Baixar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="https://unpkg.com/lamejs@1.2.1/lame.min.js" defer></script>
+    <script src="../js/common.js" defer></script>
+    <script src="../js/audio-converter.js" defer></script>
+</body>
+</html>

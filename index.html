@@ -1,25 +1,83 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conversor Universal - Início</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-</head>
-<body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conversor Universal - Ferramentas Online</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="css/hub-style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <div id="header-placeholder"></div>
 
-    <main class="page-content">
-        <div class="content-card">
-            <div class="card-inner">
-                <h1>Bem-vindo ao Conversor Universal</h1>
-                <p>Sua central de ferramentas online. Escolha uma opção no menu acima para começar.</p>
-            </div>
-        </div>
+    <main class="hub-container">
+      <h1>Suíte de Ferramentas</h1>
+      <p class="subtitle">
+        Todas as suas conversões e utilitários em um só lugar.
+      </p>
+
+      <div class="tool-grid">
+        <a href="/pages/image-converter.html" class="tool-card">
+          <div class="icon"><i class="fa-solid fa-image"></i></div>
+          <h3>Conversor de Formato</h3>
+          <p>
+            Converta imagens entre os formatos PNG, JPEG e WEBP de forma rápida
+            e fácil.
+          </p>
+        </a>
+
+        <a href="/pages/image-resizer.html" class="tool-card">
+          <div class="icon"><i class="fa-solid fa-crop-simple"></i></div>
+          <h3>Cortar e Redimensionar</h3>
+          <p>
+            Ajuste o enquadramento e a escala das suas imagens com precisão.
+          </p>
+        </a>
+
+        <a href="/pages/audio-cutter-final.html" class="tool-card">
+          <div class="icon"><i class="fa-solid fa-scissors"></i></div>
+          <h3>Cortador de Áudio</h3>
+          <p>
+            Corte trechos de arquivos de áudio diretamente no seu navegador.
+          </p>
+        </a>
+
+        <a href="/pages/image-watermark.html" class="tool-card">
+          <div class="icon"><i class="fa-solid fa-copyright"></i></div>
+          <h3>Marca d'Água</h3>
+          <p>
+            Aplique um texto ou logo como marca d'água em suas imagens de forma
+            fácil.
+          </p>
+        </a>
+
+        <a href="/pages/color-picker.html" class="tool-card">
+          <div class="icon"><i class="fa-solid fa-eye-dropper"></i></div>
+          <h3>Conta-gotas de Cores</h3>
+          <p>
+            Carregue uma imagem e capture o código de qualquer cor com precisão.
+          </p>
+        </a>
+
+        <a href="/pages/audio-converter.html" class="tool-card">
+          <div class="icon"><i class="fa-solid fa-sliders"></i></div>
+          <h3>Conversor de Áudio</h3>
+          <p>
+            Altere o formato (MP3, WAV) e ajuste o volume dos seus arquivos de
+            áudio.
+          </p>
+        </a>
+      </div>
     </main>
-    
-    <script src="script.js"></script>
-</body>
+
+    <script src="js/common.js" defer></script>
+  </body>
 </html>

@@ -1,0 +1,88 @@
+/* /css/color-picker.css */
+.hidden { display: none !important; }
+
+.color-picker-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.image-column, .details-column {
+    background: var(--container-bg);
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#upload-area-picker {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border: 2px dashed rgba(255, 255, 255, 0.2); border-radius: 8px;
+    min-height: 500px; text-align: center; color: rgba(255, 255, 255, 0.5);
+}
+#upload-area-picker i { font-size: 3rem; margin-bottom: 20px; }
+#upload-area-picker p { margin-bottom: 20px; }
+#image-file-input { display: none; }
+
+#canvas-wrapper { width: 100%; }
+#image-canvas { max-width: 100%; height: auto; border-radius: 8px; display: block; cursor: crosshair; }
+
+.details-column .card-inner { padding: 0; }
+.details-column h2 { text-align: center; margin-top: 0; margin-bottom: 25px; }
+
+#color-swatch {
+    width: 100%;
+    height: 120px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    background-color: #333;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.1s;
+}
+
+.color-codes { display: flex; flex-direction: column; gap: 15px; }
+
+.code-group label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 5px;
+    display: block;
+}
+.code-value-wrapper {
+    display: flex;
+    align-items: center;
+}
+.code-group input {
+    flex-grow: 1;
+    background: #2a2b32;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px 0 0 6px;
+    color: #fff;
+    font-size: 1rem;
+    padding: 10px;
+}
+.code-group button {
+    background: #36373f;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: none;
+    color: #ccc;
+    padding: 10px 15px;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.code-group button:hover { background-color: #45464e; }
+.instruction {
+    font-size: 0.9rem;
+    text-align: center;
+    opacity: 0.7;
+    margin-top: 25px;
+}
+
+@media (max-width: 900px) {
+    .color-picker-layout { grid-template-columns: 1fr; }
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

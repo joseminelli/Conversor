@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conta-gotas de Cores</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link rel="stylesheet" href="../css/common.css" />
+    <link rel="stylesheet" href="../css/color-picker.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="page-content">
+        <div class="color-picker-layout">
+            <div class="image-column">
+                <div class="file-upload-group" id="upload-area-picker">
+    <h1>Conta-gotas de Cores</h1>
+    <p>Extraia cores de qualquer imagem com precisão.</p>
+
+    <label for="image-file-input" class="custom-file-upload">Clique para escolher o arquivo</label>
+    <input type="file" id="image-file-input" accept="image/*">
+    <div id="file-name-display" class="file-name-display">Nenhum arquivo selecionado</div>
+</div>
+                <div id="canvas-wrapper" class="hidden">
+                    <canvas id="image-canvas"></canvas>
+                </div>
+            </div>
+
+            <div class="details-column hidden" id="details-panel">
+                <div class="card-inner" id="colorPickerCard">
+                    <h2>Cor</h2>
+                    <div id="color-swatch"></div>
+                    <div class="color-codes">
+                        <div class="code-group">
+                            <label>HEX</label>
+                            <div class="code-value-wrapper">
+                                <input type="text" id="hex-value" readonly>
+                                <button data-copy="hex-value"><i class="fa-regular fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="code-group">
+                            <label>RGB</label>
+                            <div class="code-value-wrapper">
+                                <input type="text" id="rgb-value" readonly>
+                                <button data-copy="rgb-value"><i class="fa-regular fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="code-group">
+                            <label>HSL</label>
+                            <div class="code-value-wrapper">
+                                <input type="text" id="hsl-value" readonly>
+                                <button data-copy="hsl-value"><i class="fa-regular fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="instruction">Passe o mouse sobre a imagem para selecionar uma cor.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="../js/common.js" defer></script>
+    <script src="../js/color-picker.js" defer></script> 
+</body>
+</html>
