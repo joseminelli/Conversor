@@ -1,38 +1,80 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redimensionar Imagem</title>
-    <link rel="stylesheet" href="../style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cortar e Redimensionar Imagem</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link rel="stylesheet" href="../css/common.css" />
+    <link rel="stylesheet" href="../css/image-resizer.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
 </head>
 <body>
-    <header class="main-header">
-        <div class="logo"><a href="index.html">Conversor Universal</a></div>
-        <nav class="main-nav">
-            <ul>
-                <li class="dropdown">
-                    <span class="active">Imagens ▼</span>
-                    <ul class="dropdown-menu">
-                        <li><a href="pages/image-converter.html">Converter Formato</a></li>
-                        <li><a href="pages/image-resizer.html">Redimensionar (Exemplo)</a></li>
-                    </ul>
-                </li>
-                <li><a class="nav-link" href="pages/youtube-downloader.html">YouTube</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div id="header-placeholder"></div>
 
     <main class="page-content">
         <div class="content-card">
-            <h1>Redimensionar Imagem</h1>
-            <p>Esta ferramenta ainda está em construção. Volte em breve!</p>
+            <div class="card-inner" id="imageResizerCard">
+                <div id="upload-area-resizer">
+                    <h1>Cortar e Redimensionar</h1>
+                    <p>Carregue uma imagem para cortar e ajustar a escala.</p>
+                    <label for="image-file-input" class="upload-button">
+                        <i class="fa-solid fa-upload"></i> Escolher Imagem
+                    </label>
+                    <input type="file" id="image-file-input" accept="image/*" />
+                </div>
+
+                <div id="editor-area-resizer" class="hidden">
+                    <div class="preview-container">
+                        <canvas id="image-canvas"></canvas>
+                    </div>
+
+                    <div class="controls-container controls-crop">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="enable-crop">
+                            <span class="slider"></span>
+                            Habilitar Corte
+                        </label>
+                        <div id="crop-controls" class="hidden">
+                            <p class="instruction">Clique e arraste sobre a imagem para selecionar a área de corte.</p>
+                            <button type="button" id="reset-crop-btn" class="secondary-action">Limpar Seleção</button>
+                        </div>
+                    </div>
+                    
+                    <div class="info-container">
+                        <div class="dimension-box">
+                            <span class="label">SELEÇÃO</span>
+                            <span id="original-dimensions" class="dimensions">...</span>
+                        </div>
+                        <div class="arrow-icon"><i class="fa-solid fa-arrow-right-long"></i></div>
+                        <div class="dimension-box">
+                            <span class="label">TAMANHO FINAL</span>
+                            <span id="new-dimensions" class="dimensions">...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="controls-container controls-resize">
+                        <label for="resize-slider">Escala: <span id="slider-value">100%</span></label>
+                        <input type="range" id="resize-slider" min="1" max="200" value="100" />
+                    </div>
+                    
+                    <div class="output-controls">
+                        <div class="format-selector">
+                            <label for="format-select">Formato:</label>
+                            <select id="format-select">
+                                <option value="jpeg">JPEG</option>
+                                <option value="png">PNG</option>
+                                <option value="webp">WEBP</option>
+                            </select>
+                        </div>
+                        <button id="download-btn" class="main-action"><i class="fa-solid fa-download"></i> Salvar Imagem</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
     
-    <script src="../script.js"></script>
+    <script src="../js/common.js" defer></script>
+    <script src="../js/image-resizer.js" defer></script> 
 </body>
 </html>
