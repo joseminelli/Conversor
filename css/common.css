@@ -36,40 +36,6 @@ body {
     position: relative;
 }
 
-/* 2. O menu fica escondido por padrão */
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 150%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1f1f1f;
-    border-radius: 8px;
-    padding: 10px 0;
-    list-style: none;
-    min-width: 200px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 100;
-    animation: fadeIn 0.2s ease-out;
-}
-.dropdown-menu a {
-    display: block;
-    padding: 10px 20px;
-    white-space: nowrap;
-}
-
-/* 3. A classe .show, adicionada pelo JS, torna o menu visível */
-.dropdown-menu.show {
-    display: block;
-}
-
-/* 4. Estilo para o link ativo DENTRO do menu */
-.dropdown-menu .nav-link.active {
-    background-color: rgba(138, 180, 248, 0.1);
-    color: var(--accent-color);
-}
-
 /* 5. Estilo para o gatilho (ex: "Áudio ▼") quando uma de suas páginas está ativa */
 .main-nav .nav-trigger.section-active {
     color: var(--accent-color);
@@ -105,7 +71,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 5rem;
+    padding: 0 1rem;
 
     box-sizing: border-box;
 }
@@ -163,7 +129,7 @@ body {
     display: none;
     position: absolute;
     top: 150%;
-    left: 50%;
+    left: -40%;
     transform: translateX(-50%);
     background: #1f1f1f;
     border-radius: 8px;
