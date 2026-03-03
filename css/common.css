@@ -217,6 +217,20 @@ button#action-btn {
 }
 button#action-btn:hover { background-position: 100% 0; }
 
+.btn{
+    padding: 12px 24px;
+    font-size: 1rem;
+    border: none;
+    height: fit-content;
+    border-radius: 8px;
+    width: fit-content !important;
+    color: white;
+    background: var(--gradient);
+    background-size: 200% 100%;
+    transition: background-position 0.4s ease;
+    cursor: pointer;
+}
+
 .options { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; }
 
 /* Adicione ao final de /css/common.css */

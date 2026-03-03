@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compressor de Imagem - Conversor Universal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="../css/common.css" />
+    <link rel="stylesheet" href="../css/image-compressor.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="container">
+        <div class="tool-header">
+            <h1><i class="fa-solid fa-compress"></i> Compressor de Imagem</h1>
+            <p>Reduza o tamanho das suas imagens mantendo boa qualidade</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="upload-section">
+                <label id="upload" for="image-input" class="upload-box">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>Clique ou arraste uma imagem aqui</p>
+                    <small>PNG, JPEG, WebP (máx. 10MB)</small>
+                    <input type="file" id="image-input" accept="image/*" />
+                </label>
+            </div>
+
+            <div class="action-buttons" id="action-buttons" style="display: none">
+                <button id="reset-btn" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-rotate-left"></i> Nova Imagem
+                </button>
+                <div class="controls" id="controls" style="display: none">
+                    <div class="control-group">
+                        <label for="quality">
+                            Qualidade:
+                            <span id="quality-value">80</span>%
+                        </label>
+                        <input type="range" id="quality" min="10" max="100" value="80" />
+                    </div>
+
+                    <div class="control-group" style="display: none">
+                        <label for="max-width">
+                            Largura máxima:
+                            <span id="width-value">auto</span>px
+                        </label>
+                        <input type="number" id="max-width" placeholder="Deixe em branco para manter original" />
+                    </div>
+
+                    <div class="format-group">
+                        <label>Formato de saída:</label>
+                        <div class="format-options">
+                            <label>
+                                <input type="radio" name="format" value="jpeg" checked />
+                                JPEG
+                            </label>
+                            <label>
+                                <input type="radio" name="format" value="webp" />
+                                WebP
+                            </label>
+                            <label>
+                                <input type="radio" name="format" value="png" />
+                                PNG
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="download-btn" class="btn btn-primary">
+                    <i class="fa-solid fa-download"></i> Baixar Imagem
+                </button>
+            </div>
+
+            <div class="preview-section" id="preview-section" style="display: none">
+                <div class="preview-item">
+                    <h3>Original</h3>
+                    <img id="original-preview" alt="Original" />
+                    <p id="original-size" class="file-size"></p>
+                </div>
+
+                <div class="preview-item">
+                    <h3>Comprimida</h3>
+                    <img id="compressed-preview" alt="Comprimida" />
+                    <p id="compressed-size" class="file-size"></p>
+                </div>
+            </div>
+
+
+        </div>
+    </main>
+
+    <script src="../js/common.js" defer></script>
+    <script src="../js/image-compressor.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerador de QR Code - Conversor Universal</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/common.css" />
+    <link rel="stylesheet" href="../css/qr-code-generator.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="header-placeholder"></div>
+
+    <main class="container">
+      <div class="tool-header">
+        <h1><i class="fa-solid fa-qrcode"></i> Gerador de QR Code</h1>
+        <p>Crie QR codes customizáveis a partir de texto, URL ou contato</p>
+      </div>
+
+      <div class="tool-content">
+        <div class="input-section">
+          <div class="input-group">
+            <label for="qr-input">Conteúdo do QR Code:</label>
+            <div class="input-type-selector">
+              <button class="type-btn active" data-type="text">
+                <i class="fa-solid fa-text"></i> Texto
+              </button>
+              <button class="type-btn" data-type="url">
+                <i class="fa-solid fa-link"></i> URL
+              </button>
+              <button class="type-btn" data-type="contact">
+                <i class="fa-solid fa-address-card"></i> Contato
+              </button>
+            </div>
+
+            <div id="text-input" class="input-type-content">
+              <textarea
+                id="qr-input"
+                placeholder="Digite o texto para o QR Code..."
+                rows="3"
+              ></textarea>
+            </div>
+
+            <div id="url-input" class="input-type-content" style="display: none">
+              <input
+                type="url"
+                id="url-qr-input"
+                placeholder="https://exemplo.com"
+              />
+            </div>
+
+            <div id="contact-input" class="input-type-content" style="display: none">
+              <input type="text" id="contact-name" placeholder="Nome" />
+              <input type="text" id="contact-phone" placeholder="Telefone" />
+              <input type="email" id="contact-email" placeholder="Email" />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="qr-size">Tamanho:</label>
+            <div class="size-options">
+              <label>
+                <input type="radio" name="size" value="200" /> Pequeno (200px)
+              </label>
+              <label>
+                <input type="radio" name="size" value="300" checked /> Médio (300px)
+              </label>
+              <label>
+                <input type="radio" name="size" value="500" /> Grande (500px)
+              </label>
+              <label>
+                <input type="radio" name="size" value="800" /> Muito Grande (800px)
+              </label>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="qr-color">Cores:</label>
+            <div class="color-inputs">
+              <div class="color-input">
+                <label for="qr-dark">Cor Escura:</label>
+                <input type="color" id="qr-dark" value="#000000" />
+              </div>
+              <div class="color-input">
+                <label for="qr-light">Cor Clara:</label>
+                <input type="color" id="qr-light" value="#ffffff" />
+              </div>
+            </div>
+          </div>
+
+          <button id="generate-btn" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Gerar QR Code
+          </button>
+        </div>
+
+        <div class="preview-section" id="preview-section" style="display: none">
+          <div class="qr-preview">
+            <div id="qr-code-container"></div>
+          </div>
+
+          <div class="action-buttons">
+            <button id="download-png-btn" class="btn btn-primary">
+              <i class="fa-solid fa-download"></i> Baixar PNG
+            </button>
+            <button id="download-jpg-btn" class="btn btn-primary">
+              <i class="fa-solid fa-download"></i> Baixar JPG
+            </button>
+            <button id="copy-btn" class="btn btn-secondary">
+              <i class="fa-solid fa-copy"></i> Copiar para Clipboard
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="../js/common.js" defer></script>
+    <script src="../js/qr-code-generator.js" defer></script>
+  </body>
+</html>

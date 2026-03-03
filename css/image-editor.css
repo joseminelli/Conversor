@@ -1,0 +1,313 @@
+:root {
+    --primary: #8ab4f8;
+    --primary-dark: #5a8fdb;
+    --secondary: #f48aab;
+    --accent: #c58af9;
+    --surface: rgba(28, 28, 30, 0.8);
+    --surface-light: rgba(40, 40, 45, 0.6);
+    --text-primary: #e4e4e4;
+    --text-secondary: #999;
+    --border: rgba(255, 255, 255, 0.1);
+}
+
+.tool-header {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.tool-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.tool-header p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.editor-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 32px;
+    margin-top: 40px;
+}
+
+.editor-panel {
+    background: var(--surface);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+}
+
+.upload-section {
+    margin-bottom: 30px;
+}
+
+.upload-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, rgba(138, 180, 248, 0.05), rgba(197, 138, 249, 0.05));
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-box:hover {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(138, 180, 248, 0.15), rgba(197, 138, 249, 0.15));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(138, 180, 248, 0.2);
+}
+
+.upload-box i {
+    font-size: 48px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+    transition: transform 0.3s ease;
+}
+
+.upload-box:hover i {
+    transform: scale(1.1);
+}
+
+.upload-box p {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 8px 0 4px 0;
+    color: var(--text-primary);
+}
+
+.upload-box small {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.upload-box input {
+    display: none;
+}
+
+.controls-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-group label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.control-group span {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.control-group input[type="range"] {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--surface-light);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(138, 180, 248, 0.4);
+    transition: all 0.2s ease;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 6px 16px rgba(138, 180, 248, 0.6);
+}
+
+.control-group input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 4px 12px rgba(138, 180, 248, 0.4);
+    transition: all 0.2s ease;
+}
+
+.control-group input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 6px 16px rgba(138, 180, 248, 0.6);
+}
+
+.filter-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+}
+
+.filter-btn {
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--text-primary);
+}
+
+.filter-btn:hover {
+    background: rgba(138, 180, 248, 0.15);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(138, 180, 248, 0.4);
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+}
+
+.action-buttons .btn {
+    width: 100%;
+    padding: 14px;
+    font-weight: 600;
+}
+
+.preview-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    min-height: 500px;
+}
+
+#editor-canvas {
+    max-width: 100%;
+    max-height: 600px;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    animation: fadeInScale 0.4s ease;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.resize-info {
+    margin-top: 20px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    padding: 10px 16px;
+    background: var(--surface-light);
+    border-radius: 8px;
+}
+
+@media (max-width: 1024px) {
+    .editor-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .editor-container {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .editor-panel {
+        order: 2;
+        padding: 24px;
+    }
+
+    .preview-panel {
+        order: 1;
+        min-height: 350px;
+        padding: 24px;
+    }
+
+    .filter-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .action-buttons .btn {
+        flex: 1;
+        min-width: 100px;
+        padding: 12px;
+    }
+
+    .tool-header h1 {
+        font-size: 2rem;
+    }
+}

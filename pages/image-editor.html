@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editor de Imagem - Conversor Universal</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/common.css" />
+    <link rel="stylesheet" href="../css/image-editor.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="header-placeholder"></div>
+
+    <main class="container">
+      <div class="tool-header">
+        <h1><i class="fa-solid fa-wand-magic-sparkles"></i> Editor de Imagem</h1>
+        <p>Aplique filtros e ajustes à suas imagens em tempo real</p>
+      </div>
+
+      <div class="tool-content">
+        <div class="editor-container">
+          <div class="editor-panel">
+            <div class="upload-section">
+              <label for="editor-image-input" class="upload-box">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p>Carregue uma imagem para editar</p>
+                <small>PNG, JPEG, WebP</small>
+                <input type="file" id="editor-image-input" accept="image/*" />
+              </label>
+            </div>
+
+            <div class="controls-section" id="controls-section" style="display: none">
+              <div class="control-group">
+                <label for="brightness">
+                  Brilho: <span id="brightness-value">100</span>%
+                </label>
+                <input
+                  type="range"
+                  id="brightness"
+                  min="0"
+                  max="200"
+                  value="100"
+                />
+              </div>
+
+              <div class="control-group">
+                <label for="contrast">
+                  Contraste: <span id="contrast-value">100</span>%
+                </label>
+                <input
+                  type="range"
+                  id="contrast"
+                  min="0"
+                  max="200"
+                  value="100"
+                />
+              </div>
+
+              <div class="control-group">
+                <label for="saturation">
+                  Saturação: <span id="saturation-value">100</span>%
+                </label>
+                <input
+                  type="range"
+                  id="saturation"
+                  min="0"
+                  max="200"
+                  value="100"
+                />
+              </div>
+
+              <div class="control-group">
+                <label for="hue">
+                  Tonalidade: <span id="hue-value">0</span>°
+                </label>
+                <input type="range" id="hue" min="0" max="360" value="0" />
+              </div>
+
+              <div class="control-group">
+                <label for="blur">
+                  Desfoque: <span id="blur-value">0</span>px
+                </label>
+                <input type="range" id="blur" min="0" max="20" value="0" />
+              </div>
+
+              <div class="filter-buttons">
+                <button class="filter-btn" id="grayscale-btn">
+                  <i class="fa-solid fa-circle-half-stroke"></i> Escala de Cinza
+                </button>
+                <button class="filter-btn" id="invert-btn">
+                  <i class="fa-solid fa-arrow-right-arrow-left"></i> Inverter Cores
+                </button>
+                <button class="filter-btn" id="sepia-btn">
+                  <i class="fa-solid fa-camera"></i> Sépia
+                </button>
+              </div>
+
+              <div class="action-buttons">
+                <button id="reset-filters-btn" class="btn btn-secondary">
+                  <i class="fa-solid fa-arrow-rotate-left"></i> Resetar
+                </button>
+                <button id="download-editor-btn" class="btn btn-primary">
+                  <i class="fa-solid fa-download"></i> Baixar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-panel" id="preview-panel" style="display: none">
+            <canvas id="editor-canvas"></canvas>
+            <div class="resize-info">
+              Dimen: <span id="canvas-dimensions"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="../js/common.js" defer></script>
+    <script src="../js/image-editor.js" defer></script>
+  </body>
+</html>
