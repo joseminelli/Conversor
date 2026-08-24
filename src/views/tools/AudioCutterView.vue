@@ -18,15 +18,67 @@
 
       <div class="editor-area" v-if="audioBuffer">
         <div class="waveform-section">
-          <canvas
-            ref="waveformCanvas"
-            :key="`waveform-${Date.now()}`"
-            class="waveform-canvas"
-            width="800"
-            height="150"
-            @click="onWaveformClick"
-          ></canvas>
-          <div class="playhead" ref="playhead"></div>
+          <div class="waveform-wrapper"
+            @mousemove="onWaveformMouseMove"
+            @mouseleave="hideCursorLine"
+            @click="onWaveformClick">
+            <canvas
+              ref="waveformCanvas"
+              class="waveform-canvas"
+              width="800"
+              height="150"
+            ></canvas>
+
+            <!-- Cursor line (where mouse is) -->
+            <div class="cursor-line" ref="cursorLine" v-if="showCursorLine">
+              <span class="cursor-time">{{ cursorTime }}</span>
+            </div>
+
+            <!-- Click marker (shows where user clicked) -->
+            <div
+              v-if="clickedTime !== null"
+              class="click-marker"
+              :style="{ left: getMarkerPosition(clickedTime) }"
+            >
+              <span class="click-marker-time">{{ formatTime(clickedTime) }}</span>
+            </div>
+
+            <!-- Start marker (draggable) -->
+            <div
+              v-if="startTime > 0"
+              class="marker start-marker"
+              :style="{ left: getMarkerPosition(startTime) }"
+              @mousedown.stop="startDragMarker('start', $event)"
+              title="Drag para ajustar início"
+            >
+              <i class="fa-solid fa-flag"></i>
+            </div>
+
+            <!-- End marker (draggable) -->
+            <div
+              v-if="endTime < totalDuration"
+              class="marker end-marker"
+              :style="{ left: getMarkerPosition(endTime) }"
+              @mousedown.stop="startDragMarker('end', $event)"
+              title="Drag para ajustar fim"
+            >
+              <i class="fa-solid fa-flag"></i>
+            </div>
+
+            <!-- Playhead (play indicator) -->
+            <div class="playhead" ref="playhead" v-if="isPlaying"></div>
+
+            <!-- Selection highlight -->
+            <div
+              v-if="startTime > 0 || endTime < totalDuration"
+              class="selection-highlight"
+              :style="{
+                left: getMarkerPosition(startTime),
+                right: (100 - getMarkerPercentage(endTime)) + '%'
+              }"
+            ></div>
+          </div>
+
           <div class="time-display">
             <span>{{ currentTime }}</span>
             <span>{{ totalTime }}</span>
@@ -87,7 +139,13 @@ export default defineComponent({
       isPlaying: false,
       playbackStartTime: 0,
       startOffset: 0,
-      animationFrameId: null as number | null
+      animationFrameId: null as number | null,
+      showCursorLine: false,
+      cursorTime: '00:00',
+      cursorPercent: 0,
+      draggingMarker: null as 'start' | 'end' | null,
+      canvasWidth: 800,
+      clickedTime: null as number | null
     }
   },
   computed: {
@@ -175,6 +233,7 @@ export default defineComponent({
 
       if (!this.audioContext || !this.audioBuffer) return
 
+      this.clickedTime = null
       this.sourceNode = this.audioContext.createBufferSource()
       this.sourceNode.buffer = this.audioBuffer
       this.sourceNode.connect(this.audioContext.destination)
@@ -212,8 +271,10 @@ export default defineComponent({
       const currentPlaybackTime = this.startOffset + elapsedTime
       const percent = (currentPlaybackTime / this.totalDuration) * 100
 
-      const playhead = this.$refs.playhead as HTMLElement
-      playhead.style.left = `${percent}%`
+      const playhead = this.$refs.playhead as HTMLElement | undefined
+      if (playhead) {
+        playhead.style.left = `${percent}%`
+      }
       this.currentTime = formatTime(currentPlaybackTime)
 
       this.animationFrameId = requestAnimationFrame(() => this.updatePlayhead())
@@ -222,15 +283,18 @@ export default defineComponent({
     onWaveformClick(event: MouseEvent) {
       if (!this.audioBuffer) return
 
-      const canvas = event.currentTarget as HTMLCanvasElement
-      const rect = canvas.getBoundingClientRect()
+      const wrapper = event.currentTarget as HTMLElement
+      const rect = wrapper.getBoundingClientRect()
       const clickX = event.clientX - rect.left
       const percent = clickX / rect.width
       const newTime = percent * this.audioBuffer.duration
 
+      this.clickedTime = newTime
       this.startOffset = newTime
-      const playhead = this.$refs.playhead as HTMLElement
-      playhead.style.left = `${percent * 100}%`
+      const playhead = this.$refs.playhead as HTMLElement | undefined
+      if (playhead) {
+        playhead.style.left = `${percent * 100}%`
+      }
       this.currentTime = formatTime(newTime)
 
       if (this.isPlaying) {
@@ -242,6 +306,7 @@ export default defineComponent({
       this.startTime = this.isPlaying
         ? this.startOffset + (this.audioContext!.currentTime - this.playbackStartTime)
         : this.startOffset
+      this.clickedTime = null
       this.drawWaveform()
     },
 
@@ -256,6 +321,7 @@ export default defineComponent({
       }
 
       this.endTime = currentTime
+      this.clickedTime = null
       this.drawWaveform()
     },
 
@@ -307,6 +373,71 @@ export default defineComponent({
       this.currentTime = '00:00'
       this.totalTime = '00:00'
       this.startOffset = 0
+    },
+
+    getMarkerPosition(time: number): string {
+      const percent = (time / this.totalDuration) * 100
+      return `${percent}%`
+    },
+
+    getMarkerPercentage(time: number): number {
+      return (time / this.totalDuration) * 100
+    },
+
+    onWaveformMouseMove(event: MouseEvent) {
+      if (!this.audioBuffer) return
+
+      const canvas = event.currentTarget as HTMLCanvasElement
+      const rect = canvas.getBoundingClientRect()
+      const mouseX = event.clientX - rect.left
+      const percent = mouseX / rect.width
+      this.cursorPercent = percent * 100
+      this.cursorTime = formatTime(percent * this.totalDuration)
+      this.showCursorLine = true
+
+      const cursorLine = this.$refs.cursorLine as HTMLElement
+      if (cursorLine) {
+        cursorLine.style.left = `${this.cursorPercent}%`
+      }
+    },
+
+    hideCursorLine() {
+      this.showCursorLine = false
+    },
+
+    startDragMarker(markerType: 'start' | 'end', event: MouseEvent) {
+      if (!this.audioBuffer) return
+
+      this.draggingMarker = markerType
+      const canvas = this.$refs.waveformCanvas as HTMLCanvasElement
+
+      const onMouseMove = (moveEvent: MouseEvent) => {
+        const rect = canvas.getBoundingClientRect()
+        const mouseX = moveEvent.clientX - rect.left
+        const percent = Math.max(0, Math.min(1, mouseX / rect.width))
+        const newTime = percent * this.totalDuration
+
+        if (markerType === 'start') {
+          if (newTime < this.endTime) {
+            this.startTime = newTime
+          }
+        } else {
+          if (newTime > this.startTime) {
+            this.endTime = newTime
+          }
+        }
+
+        this.drawWaveform()
+      }
+
+      const onMouseUp = () => {
+        this.draggingMarker = null
+        document.removeEventListener('mousemove', onMouseMove)
+        document.removeEventListener('mouseup', onMouseUp)
+      }
+
+      document.addEventListener('mousemove', onMouseMove)
+      document.addEventListener('mouseup', onMouseUp)
     }
   },
 
@@ -366,25 +497,136 @@ export default defineComponent({
   position: relative;
 }
 
+.waveform-wrapper {
+  position: relative;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
 .waveform-canvas {
   display: block;
   width: 100%;
   height: 150px;
   border-radius: 8px;
-  cursor: crosshair;
-  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Cursor line - vertical indicator where mouse is */
+.cursor-line {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 150px;
+  background: linear-gradient(to bottom, var(--accent-color), transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cursor-time {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-color);
+  color: #000;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Markers for start/end points */
+.marker {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 150px;
+  cursor: ew-resize;
+  z-index: 3;
+  transition: all 0.15s;
+}
+
+.marker i {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  color: var(--accent-color);
+  background: var(--container-bg);
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--accent-color);
+}
+
+.start-marker {
+  background: rgba(138, 180, 248, 0.6);
+  left: 0;
+}
+
+.start-marker:hover {
+  background: rgba(138, 180, 248, 0.9);
+}
+
+.end-marker {
+  background: rgba(240, 120, 120, 0.6);
+  right: 0;
+}
+
+.end-marker:hover {
+  background: rgba(240, 120, 120, 0.9);
+}
+
+/* Selection highlight - area between start and end */
+.selection-highlight {
+  position: absolute;
+  top: 0;
+  height: 150px;
+  background: linear-gradient(to right, rgba(138, 180, 248, 0.15), rgba(240, 120, 120, 0.15));
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 8px;
 }
 
 .playhead {
   position: absolute;
-  top: 20px;
+  top: 0;
   width: 2px;
   height: 150px;
-  background: var(--accent-color);
+  background: #fff;
   left: 0;
-  opacity: 0;
-  transition: opacity 0.2s;
+  opacity: 1;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
   pointer-events: none;
+  z-index: 4;
+}
+
+/* Click marker - shows where user clicked */
+.click-marker {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 150px;
+  background: linear-gradient(to bottom, rgba(255, 200, 0, 0.8), rgba(255, 200, 0, 0.3));
+  pointer-events: none;
+  z-index: 2;
+}
+
+.click-marker-time {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 200, 0, 0.9);
+  color: #000;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 200, 0, 0.6);
 }
 
 .time-display {
