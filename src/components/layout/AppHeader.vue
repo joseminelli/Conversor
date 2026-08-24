@@ -143,12 +143,17 @@ export default defineComponent({
   top: 0;
   left: 0;
   width: 100%;
-  background: rgba(18, 18, 18, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(
+    180deg,
+    rgba(18, 18, 18, 0.98) 0%,
+    rgba(18, 18, 18, 0.92) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(138, 180, 248, 0.1);
   z-index: 1000;
   padding-top: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .header-container {
@@ -156,7 +161,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1rem;
+  padding: 0 2rem;
   max-width: 100%;
 }
 
@@ -167,16 +172,25 @@ export default defineComponent({
 .logo a {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--text-color);
+  gap: 10px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   text-decoration: none;
   transition: all 0.3s;
+  letter-spacing: -0.5px;
 }
 
 .logo a:hover {
-  color: var(--accent-color);
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 10px rgba(138, 180, 248, 0.3));
+}
+
+.logo a i {
+  font-size: 1.6rem;
 }
 
 .logo-text {
@@ -193,13 +207,12 @@ export default defineComponent({
 .desktop-nav {
   display: none;
   margin-left: auto;
-  gap: 0;
+  gap: 5px;
 }
 
 @media (min-width: 769px) {
   .desktop-nav {
     display: flex;
-    gap: 5px;
   }
 }
 
@@ -212,17 +225,17 @@ export default defineComponent({
 
 .nav-category {
   height: 100%;
-  padding: 0 16px;
+  padding: 0 20px;
   background: none;
   border: none;
   color: var(--text-color);
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   position: relative;
 }
 
@@ -235,10 +248,11 @@ export default defineComponent({
 }
 
 .nav-category i {
-  font-size: 0.7rem;
-  transition: transform 0.3s;
+  font-size: 0.65rem;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+.nav-category:hover i,
 .nav-category.active i {
   transform: rotate(180deg);
 }
@@ -247,77 +261,104 @@ export default defineComponent({
   content: '';
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
+  left: 50%;
+  width: 0;
+  height: 3px;
   background: var(--gradient);
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.3s ease;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
 }
 
 .nav-category:hover::after,
 .nav-category.active::after {
-  transform: scaleX(1);
-  transform-origin: left;
+  width: 30px;
 }
 
 .nav-submenu {
   position: absolute;
-  top: 100%;
-  right: 0;
-  background: #1a1a1a;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  min-width: 220px;
-  padding: 8px 0;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(26, 26, 28, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(138, 180, 248, 0.2);
+  border-radius: 14px;
+  min-width: 250px;
+  padding: 12px 0;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-10px);
-  transition: all 0.3s ease;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  transform: translateX(-50%) translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(138, 180, 248, 0.1);
   z-index: 100;
 }
 
 .nav-submenu.show {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0);
 }
 
 .submenu-link {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 18px;
+  gap: 12px;
+  padding: 14px 20px;
   color: var(--text-color);
   text-decoration: none;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   font-size: 0.9rem;
+  position: relative;
+  margin: 0 6px;
+  border-radius: 10px;
+}
+
+.submenu-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 0;
+  background: var(--gradient);
+  transform: translateY(-50%);
+  border-radius: 3px;
+  transition: height 0.2s ease;
 }
 
 .submenu-link:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(138, 180, 248, 0.08);
   color: var(--accent-color);
-  padding-left: 24px;
+}
+
+.submenu-link:hover::before {
+  height: 20px;
 }
 
 .submenu-link i {
-  width: 18px;
+  width: 20px;
   text-align: center;
-  opacity: 0.7;
+  opacity: 0.8;
+  font-size: 0.95rem;
+  transition: transform 0.2s ease;
+}
+
+.submenu-link:hover i {
+  transform: scale(1.15);
 }
 
 /* Mobile Menu Button */
 .mobile-menu-btn {
   display: none;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   background: none;
   border: none;
   cursor: pointer;
   padding: 8px;
   margin-left: auto;
+  transition: all 0.3s ease;
 }
 
 @media (max-width: 768px) {
@@ -327,23 +368,24 @@ export default defineComponent({
 }
 
 .mobile-menu-btn span {
-  width: 24px;
-  height: 2.5px;
+  width: 26px;
+  height: 3px;
   background: var(--text-color);
-  border-radius: 2px;
-  transition: all 0.3s;
+  border-radius: 3px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .mobile-menu-btn.active span:nth-child(1) {
-  transform: rotate(45deg) translate(8px, 8px);
+  transform: rotate(45deg) translate(3px, 3px)
 }
 
 .mobile-menu-btn.active span:nth-child(2) {
   opacity: 0;
+  transform: translateX(-10px);
 }
 
 .mobile-menu-btn.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(7px, -7px);
+  transform: rotate(-45deg) translate(10px, -10px);
 }
 
 /* Mobile Navigation */
@@ -353,11 +395,12 @@ export default defineComponent({
   top: var(--header-height);
   left: 0;
   right: 0;
-  background: #1a1a1a;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(26, 26, 28, 0.98);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(138, 180, 248, 0.1);
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease;
+  transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @media (max-width: 768px) {
@@ -366,16 +409,16 @@ export default defineComponent({
   }
 
   .mobile-nav.open {
-    max-height: 500px;
+    max-height: 600px;
   }
 }
 
 .mobile-nav-content {
-  padding: 8px 0;
+  padding: 12px 0;
 }
 
 .mobile-category {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(138, 180, 248, 0.1);
 }
 
 .mobile-category:last-child {
@@ -384,23 +427,24 @@ export default defineComponent({
 
 .mobile-category-btn {
   width: 100%;
-  padding: 14px 16px;
+  padding: 16px 20px;
   background: none;
   border: none;
   color: var(--text-color);
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   text-align: left;
 }
 
 .mobile-category-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(138, 180, 248, 0.08);
   color: var(--accent-color);
+  padding-left: 24px;
 }
 
 .mobile-category-btn.active {
@@ -409,7 +453,7 @@ export default defineComponent({
 
 .mobile-category-btn i {
   font-size: 0.7rem;
-  transition: transform 0.3s;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .mobile-category-btn.active i {
@@ -417,8 +461,8 @@ export default defineComponent({
 }
 
 .mobile-submenu {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 0;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8px 0;
   animation: slideDown 0.3s ease;
 }
 
@@ -436,29 +480,56 @@ export default defineComponent({
 .mobile-submenu-link {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 16px 12px 40px;
+  gap: 12px;
+  padding: 14px 20px 14px 50px;
   color: var(--text-color);
   text-decoration: none;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   font-size: 0.9rem;
   border-left: 3px solid transparent;
 }
 
 .mobile-submenu-link:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(138, 180, 248, 0.08);
   color: var(--accent-color);
   border-left-color: var(--accent-color);
+  padding-left: 56px;
 }
 
 .mobile-submenu-link.router-link-active {
   color: var(--accent-color);
   border-left-color: var(--accent-color);
+  background: rgba(138, 180, 248, 0.08);
 }
 
 .mobile-submenu-link i {
-  width: 16px;
+  width: 18px;
   text-align: center;
-  opacity: 0.7;
+  opacity: 0.8;
+  font-size: 0.95rem;
+  transition: transform 0.2s ease;
+}
+
+.mobile-submenu-link:hover i {
+  transform: scale(1.15);
+}
+
+@media (max-width: 640px) {
+  .header-container {
+    padding: 0 1rem;
+  }
+
+  .nav-category {
+    padding: 0 12px;
+    font-size: 0.85rem;
+  }
+
+  .mobile-category-btn {
+    padding: 14px 16px;
+  }
+
+  .mobile-submenu-link {
+    padding: 12px 16px 12px 45px;
+  }
 }
 </style>

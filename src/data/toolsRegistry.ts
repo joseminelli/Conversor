@@ -72,16 +72,6 @@ export const tools: ToolMeta[] = [
     icon: 'fa-language',
     route: '/text-converter',
     category: 'utilitários'
-  },
-  {
-    id: 'roll2paper',
-    title: 'Roll2Paper',
-    description: 'Transform sua ficha de RPG .cah em um PDF pronto para imprimir, com layout personalizável e suporte a múltiplas páginas.',
-    icon: 'fa-dice',
-    route: 'https://joseminelli.github.io/Roll2Paper/',
-    category: 'utilitários',
-    external: true,
-    externalUrl: 'https://joseminelli.github.io/Roll2Paper/'
   }
 ]
 
