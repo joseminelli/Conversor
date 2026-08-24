@@ -146,10 +146,11 @@ export default defineComponent({
 
       this.originalFileName = file.name
       const reader = new FileReader()
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const img = new Image()
-        img.onload = () => {
+        img.onload = async () => {
           this.originalImage = img
+          await this.$nextTick()
           this.redrawCanvas()
         }
         img.src = event.target?.result as string

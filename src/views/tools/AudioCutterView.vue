@@ -114,6 +114,8 @@ export default defineComponent({
       this.totalDuration = this.audioBuffer.duration
       this.endTime = this.totalDuration
       this.totalTime = formatTime(this.totalDuration)
+
+      await this.$nextTick()
       this.drawWaveform()
     },
 

@@ -138,17 +138,18 @@ export default defineComponent({
     }
   },
   methods: {
-    handleImageUpload(file: File) {
+    async handleImageUpload(file: File) {
       if (!file.type.startsWith('image/')) {
         this.$message.error('Por favor, selecione uma imagem válida')
         return
       }
 
       const reader = new FileReader()
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const img = new Image()
-        img.onload = () => {
+        img.onload = async () => {
           this.originalImage = img
+          await this.$nextTick()
           const canvas = this.$refs.editorCanvas as HTMLCanvasElement
           canvas.width = img.width
           canvas.height = img.height

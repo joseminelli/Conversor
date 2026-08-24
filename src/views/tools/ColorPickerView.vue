@@ -93,11 +93,12 @@ export default defineComponent({
     }
   },
   methods: {
-    handleImageUpload(file: File) {
+    async handleImageUpload(file: File) {
       const reader = new FileReader()
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const img = new Image()
-        img.onload = () => {
+        img.onload = async () => {
+          await this.$nextTick()
           const canvas = this.$refs.imageCanvas as HTMLCanvasElement
           canvas.width = img.width
           canvas.height = img.height

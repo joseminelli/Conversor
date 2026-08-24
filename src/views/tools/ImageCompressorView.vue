@@ -138,10 +138,11 @@ export default defineComponent({
 
       this.originalFile = file
       const reader = new FileReader()
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const img = new Image()
-        img.onload = () => {
+        img.onload = async () => {
           this.originalImage = img
+          await this.$nextTick()
           this.compressImage()
         }
         img.src = event.target?.result as string

@@ -109,6 +109,7 @@ export default defineComponent({
       this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
 
       this.volume = 100
+      await this.$nextTick()
       this.updateWaveform()
     },
 

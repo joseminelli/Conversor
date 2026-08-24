@@ -179,17 +179,18 @@ export default defineComponent({
     }
   },
   methods: {
-    handleMainImageUpload(file: File) {
+    async handleMainImageUpload(file: File) {
       if (!file.type.startsWith('image/')) {
         this.$message.error('Por favor, selecione uma imagem válida')
         return
       }
 
       const reader = new FileReader()
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const img = new Image()
-        img.onload = () => {
+        img.onload = async () => {
           this.mainImage = img
+          await this.$nextTick()
           this.redrawCanvas()
         }
         img.src = event.target?.result as string
