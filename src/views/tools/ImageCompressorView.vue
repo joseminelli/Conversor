@@ -60,13 +60,13 @@
       <div class="preview-section" v-if="originalImage && compressedDataUrl">
         <div class="preview-item">
           <h3>Original</h3>
-          <img :key="`original-${Date.now()}`" :src="originalImage.src" alt="Original" />
+          <img :src="originalImage.src" alt="Original" />
           <p class="file-size" v-if="originalFileSize">{{ originalFileSize }}</p>
         </div>
 
         <div class="preview-item">
           <h3>Comprimida</h3>
-          <img :key="`compressed-${Date.now()}`" :src="compressedDataUrl" alt="Comprimida" />
+          <img :src="compressedDataUrl" alt="Comprimida" />
           <p class="file-size" v-if="compressedFileSize">{{ compressedFileSize }}</p>
         </div>
       </div>

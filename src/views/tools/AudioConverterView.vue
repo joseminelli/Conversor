@@ -18,13 +18,21 @@
 
       <div class="editor-area" v-if="audioBuffer">
         <div class="waveform-section">
-          <canvas
-            ref="waveformCanvas"
-            :key="`converter-waveform-${Date.now()}`"
-            class="waveform-canvas"
-            width="800"
-            height="150"
-          ></canvas>
+          <div class="waveform-wrapper"
+            @mousemove="onWaveformMouseMove"
+            @mouseleave="hideCursorLine">
+            <canvas
+              ref="waveformCanvas"
+              class="waveform-canvas"
+              width="800"
+              height="150"
+            ></canvas>
+
+            <!-- Cursor line (where mouse is) -->
+            <div class="cursor-line" ref="cursorLine" v-if="showCursorLine">
+              <span class="cursor-time">{{ cursorTime }}</span>
+            </div>
+          </div>
         </div>
 
         <div class="controls-section">
@@ -77,7 +85,7 @@
 import { defineComponent } from 'vue'
 import FileDropZone from '@/components/common/FileDropZone.vue'
 import LabeledSlider from '@/components/common/LabeledSlider.vue'
-import { bufferToWave, encodeToMp3 } from '@/utils/audio'
+import { bufferToWave, encodeToMp3, formatTime } from '@/utils/audio'
 
 export default defineComponent({
   name: 'AudioConverterView',
@@ -93,13 +101,16 @@ export default defineComponent({
       volume: 100,
       format: 'wav' as 'wav' | 'mp3',
       bitrate: 192,
-      isProcessing: false
+      isProcessing: false,
+      showCursorLine: false,
+      cursorTime: '00:00',
+      totalDuration: 0
     }
   },
   methods: {
     async handleAudioUpload(file: File) {
       if (!file.type.startsWith('audio/')) {
-        this.$message.error('Por favor, selecione um arquivo de áudio válido')
+        ;(this as any).$message.error('Por favor, selecione um arquivo de áudio válido')
         return
       }
 
@@ -108,6 +119,7 @@ export default defineComponent({
       const arrayBuffer = await file.arrayBuffer()
       this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
 
+      this.totalDuration = this.audioBuffer.duration
       this.volume = 100
       await this.$nextTick()
       this.updateWaveform()
@@ -204,11 +216,11 @@ export default defineComponent({
           link.click()
           URL.revokeObjectURL(link.href)
 
-          this.$message.success(`Áudio convertido para ${this.format.toUpperCase()}!`)
+          ;(this as any).$message.success(`Áudio convertido para ${this.format.toUpperCase()}!`)
         }
       } catch (error) {
         console.error('Erro ao processar áudio:', error)
-        this.$message.error('Erro ao processar o áudio')
+        ;(this as any).$message.error('Erro ao processar o áudio')
       } finally {
         this.isProcessing = false
       }
@@ -222,6 +234,27 @@ export default defineComponent({
       this.volume = 100
       this.format = 'wav'
       this.bitrate = 192
+    },
+
+    onWaveformMouseMove(event: MouseEvent) {
+      if (!this.audioBuffer || this.totalDuration === 0) return
+
+      const canvas = event.currentTarget as HTMLCanvasElement
+      const rect = canvas.getBoundingClientRect()
+      const mouseX = event.clientX - rect.left
+      const percent = mouseX / rect.width
+      const time = percent * this.totalDuration
+      this.cursorTime = formatTime(time)
+      this.showCursorLine = true
+
+      const cursorLine = this.$refs.cursorLine as HTMLElement
+      if (cursorLine) {
+        cursorLine.style.left = `${percent * 100}%`
+      }
+    },
+
+    hideCursorLine() {
+      this.showCursorLine = false
     }
   },
 
@@ -278,12 +311,44 @@ export default defineComponent({
   padding: 20px;
 }
 
+.waveform-wrapper {
+  position: relative;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
 .waveform-canvas {
   display: block;
   width: 100%;
   height: 150px;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Cursor line - vertical indicator where mouse is */
+.cursor-line {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 150px;
+  background: linear-gradient(to bottom, var(--accent-color), transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cursor-time {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-color);
+  color: #000;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .controls-section {

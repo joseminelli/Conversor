@@ -20,7 +20,6 @@
         <div class="canvas-wrapper">
           <canvas
             ref="imageCanvas"
-            :key="`watermark-canvas-${Date.now()}`"
             class="editor-canvas">
           </canvas>
         </div>

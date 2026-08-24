@@ -16,15 +16,18 @@
         />
       </div>
 
-      <div class="canvas-section" v-if="imageLoaded">
+      <div class="canvas-section" v-if="showCanvas">
         <div class="canvas-wrapper">
           <canvas
             ref="imageCanvas"
-            :key="`color-canvas-${Date.now()}`"
             :width="canvasWidth"
             :height="canvasHeight"
             @mousemove="onCanvasMouseMove"
+            @click="freezeColor"
           />
+          <div v-if="colorFrozen" class="freeze-indicator">
+            <i class="fa-solid fa-lock"></i> Cor Congelada - Clique para liberar
+          </div>
         </div>
 
         <div class="color-details">
@@ -89,7 +92,13 @@ export default defineComponent({
       currentColor: '#000000',
       hexValue: '#000000',
       rgbValue: 'rgb(0, 0, 0)',
-      hslValue: 'hsl(0, 0%, 0%)'
+      hslValue: 'hsl(0, 0%, 0%)',
+      colorFrozen: false
+    }
+  },
+  computed: {
+    showCanvas(): boolean {
+      return this.imageLoaded && this.canvasWidth > 0 && this.canvasHeight > 0
     }
   },
   methods: {
@@ -98,18 +107,22 @@ export default defineComponent({
       reader.onload = async (event) => {
         const img = new Image()
         img.onload = async () => {
-          await this.$nextTick()
-          const canvas = this.$refs.imageCanvas as HTMLCanvasElement
-          canvas.width = img.width
-          canvas.height = img.height
+          // Set dimensions FIRST to trigger canvas render via v-if
           this.canvasWidth = img.width
           this.canvasHeight = img.height
-
-          const ctx = canvas.getContext('2d', { willReadFrequently: true })
-          if (ctx) {
-            ctx.drawImage(img, 0, 0)
-          }
           this.imageLoaded = true
+
+          // THEN wait for canvas to be rendered in DOM
+          await this.$nextTick()
+
+          // NOW access the canvas and draw
+          const canvas = this.$refs.imageCanvas as HTMLCanvasElement
+          if (canvas) {
+            const ctx = canvas.getContext('2d', { willReadFrequently: true })
+            if (ctx) {
+              ctx.drawImage(img, 0, 0)
+            }
+          }
         }
         img.src = event.target?.result as string
       }
@@ -117,7 +130,7 @@ export default defineComponent({
     },
 
     onCanvasMouseMove(event: MouseEvent) {
-      if (!this.imageLoaded) return
+      if (!this.imageLoaded || this.colorFrozen) return
 
       const canvas = this.$refs.imageCanvas as HTMLCanvasElement
       const ctx = canvas.getContext('2d', { willReadFrequently: true })
@@ -136,6 +149,36 @@ export default defineComponent({
       const b = pixel[2]
 
       this.updateColorDetails(r, g, b)
+    },
+
+    freezeColor(event: MouseEvent) {
+      if (!this.imageLoaded) return
+
+      if (this.colorFrozen) {
+        // Click again to unfreeze
+        this.colorFrozen = false
+        return
+      }
+
+      // Freeze at clicked position
+      const canvas = this.$refs.imageCanvas as HTMLCanvasElement
+      const ctx = canvas.getContext('2d', { willReadFrequently: true })
+      if (!ctx) return
+
+      const rect = canvas.getBoundingClientRect()
+      const scaleX = canvas.width / rect.width
+      const scaleY = canvas.height / rect.height
+
+      const x = Math.floor((event.clientX - rect.left) * scaleX)
+      const y = Math.floor((event.clientY - rect.top) * scaleY)
+
+      const pixel = ctx.getImageData(x, y, 1, 1).data
+      const r = pixel[0]
+      const g = pixel[1]
+      const b = pixel[2]
+
+      this.updateColorDetails(r, g, b)
+      this.colorFrozen = true
     },
 
     updateColorDetails(r: number, g: number, b: number) {
@@ -216,11 +259,48 @@ export default defineComponent({
   text-align: center;
 }
 
+.canvas-wrapper {
+  position: relative;
+}
+
 .canvas-wrapper canvas {
   max-width: 100%;
   height: auto;
   cursor: crosshair;
   border-radius: 8px;
+  transition: opacity 0.2s;
+}
+
+.canvas-wrapper canvas:hover {
+  opacity: 0.9;
+}
+
+.freeze-indicator {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(138, 180, 248, 0.9);
+  color: #000;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .color-details {
