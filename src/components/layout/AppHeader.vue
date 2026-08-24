@@ -3,7 +3,7 @@
     <div class="header-container">
       <div class="logo">
         <router-link to="/">
-          <i class="fa-solid fa-toolbox"></i>
+          <img src="..\..\..\favicon.png" alt="">
           <span class="logo-text">Conversor</span>
         </router-link>
       </div>
@@ -11,29 +11,16 @@
       <!-- Desktop Navigation -->
       <nav class="desktop-nav">
         <div class="nav-dropdown" v-for="category in categories" :key="category">
-          <button
-            class="nav-category"
-            :class="{ active: isActiveCategory(category) }"
-            @mouseenter="openCategory = category"
-            @mouseleave="openCategory = null"
-          >
+          <button class="nav-category" :class="{ active: isActiveCategory(category) }"
+            @mouseenter="openCategory = category" @mouseleave="openCategory = null">
             {{ formatCategory(category) }}
             <i class="fa-solid fa-chevron-down"></i>
           </button>
 
-          <div
-            class="nav-submenu"
-            :class="{ show: openCategory === category }"
-            @mouseenter="openCategory = category"
-            @mouseleave="openCategory = null"
-          >
-            <router-link
-              v-for="tool in getToolsByCategory(category)"
-              :key="tool.id"
-              :to="tool.route"
-              class="submenu-link"
-              @click="openCategory = null"
-            >
+          <div class="nav-submenu" :class="{ show: openCategory === category }" @mouseenter="openCategory = category"
+            @mouseleave="openCategory = null">
+            <router-link v-for="tool in getToolsByCategory(category)" :key="tool.id" :to="tool.route"
+              class="submenu-link" @click="openCategory = null">
               <i :class="`fa-solid ${tool.icon}`"></i>
               {{ tool.title }}
             </router-link>
@@ -42,11 +29,7 @@
       </nav>
 
       <!-- Mobile Menu Button -->
-      <button
-        class="mobile-menu-btn"
-        @click="mobileMenuOpen = !mobileMenuOpen"
-        :class="{ active: mobileMenuOpen }"
-      >
+      <button class="mobile-menu-btn" @click="mobileMenuOpen = !mobileMenuOpen" :class="{ active: mobileMenuOpen }">
         <span></span>
         <span></span>
         <span></span>
@@ -57,23 +40,15 @@
     <nav class="mobile-nav" :class="{ open: mobileMenuOpen }">
       <div class="mobile-nav-content">
         <div class="mobile-category" v-for="category in categories" :key="category">
-          <button
-            class="mobile-category-btn"
-            @click="toggleMobileCategory(category)"
-            :class="{ active: mobileCategoryOpen === category }"
-          >
+          <button class="mobile-category-btn" @click="toggleMobileCategory(category)"
+            :class="{ active: mobileCategoryOpen === category }">
             {{ formatCategory(category) }}
             <i class="fa-solid fa-chevron-down"></i>
           </button>
 
           <div class="mobile-submenu" v-show="mobileCategoryOpen === category">
-            <router-link
-              v-for="tool in getToolsByCategory(category)"
-              :key="tool.id"
-              :to="tool.route"
-              class="mobile-submenu-link"
-              @click="closeMobileMenu"
-            >
+            <router-link v-for="tool in getToolsByCategory(category)" :key="tool.id" :to="tool.route"
+              class="mobile-submenu-link" @click="closeMobileMenu">
               <i :class="`fa-solid ${tool.icon}`"></i>
               {{ tool.title }}
             </router-link>
@@ -143,11 +118,9 @@ export default defineComponent({
   top: 0;
   left: 0;
   width: 100%;
-  background: linear-gradient(
-    180deg,
-    rgba(18, 18, 18, 0.98) 0%,
-    rgba(18, 18, 18, 0.92) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(18, 18, 18, 0.98) 0%,
+      rgba(18, 18, 18, 0.92) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(138, 180, 248, 0.1);
@@ -189,8 +162,9 @@ export default defineComponent({
   filter: drop-shadow(0 0 10px rgba(138, 180, 248, 0.3));
 }
 
-.logo a i {
-  font-size: 1.6rem;
+.logo a img {
+  width: 43px;
+  height: 43px;
 }
 
 .logo-text {
@@ -471,6 +445,7 @@ export default defineComponent({
     opacity: 0;
     max-height: 0;
   }
+
   to {
     opacity: 1;
     max-height: 500px;
