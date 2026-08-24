@@ -265,7 +265,7 @@ export default defineComponent({
 .nav-submenu {
   position: absolute;
   top: 100%;
-  left: 0;
+  right: 0;
   background: #1a1a1a;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;

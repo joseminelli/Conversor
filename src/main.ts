@@ -17,6 +17,7 @@ import ColorPickerView from './views/tools/ColorPickerView.vue'
 import AudioCutterView from './views/tools/AudioCutterView.vue'
 import AudioConverterView from './views/tools/AudioConverterView.vue'
 import QrCodeGeneratorView from './views/tools/QrCodeGeneratorView.vue'
+import TextConverterView from './views/tools/TextConverterView.vue'
 
 const app = createApp(App)
 
@@ -72,6 +73,11 @@ const router = createRouter({
       path: '/qr-code-generator',
       name: 'QrCodeGenerator',
       component: QrCodeGeneratorView
+    },
+    {
+      path: '/text-converter',
+      name: 'TextConverter',
+      component: TextConverterView
     },
     {
       path: '/:pathMatch(.*)*',

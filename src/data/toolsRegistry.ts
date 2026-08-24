@@ -66,6 +66,14 @@ export const tools: ToolMeta[] = [
     category: 'imagens'
   },
   {
+    id: 'text-converter',
+    title: 'Conversor de Texto',
+    description: 'Converta textos entre diferentes bases: binário, hexadecimal, Base64, ASCII e mais.',
+    icon: 'fa-language',
+    route: '/text-converter',
+    category: 'utilitários'
+  },
+  {
     id: 'roll2paper',
     title: 'Roll2Paper',
     description: 'Transform sua ficha de RPG .cah em um PDF pronto para imprimir, com layout personalizável e suporte a múltiplas páginas.',
