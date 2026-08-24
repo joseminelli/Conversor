@@ -9,7 +9,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
-  base: process.env.NODE_ENV === 'production' && process.env.GITHUB_PAGES === 'true' ? '/Conversor/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/Conversor/' : '/',
   server: {
     port: 5173,
     host: true
