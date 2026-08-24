@@ -209,7 +209,6 @@ export default defineComponent({
     },
 
     resetCrop() {
-      this.cropRect = {}
       this.redrawCanvas()
     },
 
@@ -258,7 +257,6 @@ export default defineComponent({
       this.originalImage = null
       this.originalFileName = ''
       this.isCroppingEnabled = false
-      this.cropRect = {}
       this.resizePercentage = 100
       this.format = 'jpeg'
       this.quality = 95

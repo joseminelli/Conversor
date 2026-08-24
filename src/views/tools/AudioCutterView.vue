@@ -7,27 +7,15 @@
 
     <div class="tool-content">
       <div class="upload-section" v-if="!audioBuffer">
-        <FileDropZone
-          accept="audio/*"
-          label="Clique ou arraste um arquivo de áudio"
-          hint="MP3, WAV, OGG, etc."
-          icon="fa-cloud-arrow-up"
-          @file-selected="handleAudioUpload"
-        />
+        <FileDropZone accept="audio/*" label="Clique ou arraste um arquivo de áudio" hint="MP3, WAV, OGG, etc."
+          icon="fa-cloud-arrow-up" @file-selected="handleAudioUpload" />
       </div>
 
       <div class="editor-area" v-if="audioBuffer">
         <div class="waveform-section">
-          <div class="waveform-wrapper"
-            @mousemove="onWaveformMouseMove"
-            @mouseleave="hideCursorLine"
+          <div class="waveform-wrapper" @mousemove="onWaveformMouseMove" @mouseleave="hideCursorLine"
             @click="onWaveformClick">
-            <canvas
-              ref="waveformCanvas"
-              class="waveform-canvas"
-              width="800"
-              height="150"
-            ></canvas>
+            <canvas ref="waveformCanvas" class="waveform-canvas" width="800" height="150"></canvas>
 
             <!-- Cursor line (where mouse is) -->
             <div class="cursor-line" ref="cursorLine" v-if="showCursorLine">
@@ -35,33 +23,19 @@
             </div>
 
             <!-- Click marker (shows where user clicked) -->
-            <div
-              v-if="clickedTime !== null"
-              class="click-marker"
-              :style="{ left: getMarkerPosition(clickedTime) }"
-            >
+            <div v-if="clickedTime !== null" class="click-marker" :style="{ left: getMarkerPosition(clickedTime) }">
               <span class="click-marker-time">{{ formatTime(clickedTime) }}</span>
             </div>
 
             <!-- Start marker (draggable) -->
-            <div
-              v-if="startTime > 0"
-              class="marker start-marker"
-              :style="{ left: getMarkerPosition(startTime) }"
-              @mousedown.stop="startDragMarker('start', $event)"
-              title="Drag para ajustar início"
-            >
+            <div v-if="startTime > 0" class="marker start-marker" :style="{ left: getMarkerPosition(startTime) }"
+              @mousedown.stop="startDragMarker('start', $event)" title="Drag para ajustar início">
               <i class="fa-solid fa-flag"></i>
             </div>
 
             <!-- End marker (draggable) -->
-            <div
-              v-if="endTime < totalDuration"
-              class="marker end-marker"
-              :style="{ left: getMarkerPosition(endTime) }"
-              @mousedown.stop="startDragMarker('end', $event)"
-              title="Drag para ajustar fim"
-            >
+            <div v-if="endTime < totalDuration" class="marker end-marker" :style="{ left: getMarkerPosition(endTime) }"
+              @mousedown.stop="startDragMarker('end', $event)" title="Drag para ajustar fim">
               <i class="fa-solid fa-flag"></i>
             </div>
 
@@ -69,14 +43,10 @@
             <div class="playhead" ref="playhead" v-if="isPlaying"></div>
 
             <!-- Selection highlight -->
-            <div
-              v-if="startTime > 0 || endTime < totalDuration"
-              class="selection-highlight"
-              :style="{
-                left: getMarkerPosition(startTime),
-                right: (100 - getMarkerPercentage(endTime)) + '%'
-              }"
-            ></div>
+            <div v-if="startTime > 0 || endTime < totalDuration" class="selection-highlight" :style="{
+              left: getMarkerPosition(startTime),
+              right: (100 - getMarkerPercentage(endTime)) + '%'
+            }"></div>
           </div>
 
           <div class="time-display">
@@ -130,7 +100,7 @@ export default defineComponent({
     return {
       audioContext: null as AudioContext | null,
       audioBuffer: null as AudioBuffer | null,
-      sourceNode: null as AudioBufferAudioNode | null,
+      sourceNode: null as AudioBufferSourceNode | null,
       startTime: 0,
       endTime: 0,
       currentTime: '00:00',
@@ -486,6 +456,7 @@ export default defineComponent({
 
 .editor-area {
   display: flex;
+  align-items: center;
   flex-direction: column;
   gap: 20px;
 }
@@ -640,7 +611,7 @@ export default defineComponent({
 
 .controls-section {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
 }
 
@@ -686,5 +657,11 @@ export default defineComponent({
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .controls-section {
+    flex-direction: column;
+  }
 }
 </style>

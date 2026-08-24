@@ -42,7 +42,7 @@
       <section class="category-section" ref="audioSection">
         <div class="category-header">
           <div class="category-icon">
-            <i class="fa-regular fa-waveform-lines"></i>
+            <i class="fa-solid fa-file-waveform"></i>
           </div>
           <div>
             <h2>Ferramentas de Áudio</h2>
