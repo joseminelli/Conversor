@@ -20,6 +20,7 @@
         <div class="canvas-wrapper">
           <canvas
             ref="imageCanvas"
+            :key="`color-canvas-${Date.now()}`"
             :width="canvasWidth"
             :height="canvasHeight"
             @mousemove="onCanvasMouseMove"

@@ -16,7 +16,7 @@
         />
       </div>
 
-      <div class="editor-area" v-if="originalImage">
+      <div v-if="originalImage" class="editor-area">
         <div class="canvas-container">
           <canvas
             ref="imageCanvas"

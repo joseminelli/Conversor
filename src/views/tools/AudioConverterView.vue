@@ -20,7 +20,10 @@
         <div class="waveform-section">
           <canvas
             ref="waveformCanvas"
+            :key="`converter-waveform-${Date.now()}`"
             class="waveform-canvas"
+            width="800"
+            height="150"
           ></canvas>
         </div>
 

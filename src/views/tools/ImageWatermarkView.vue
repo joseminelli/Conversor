@@ -18,7 +18,11 @@
 
       <div class="editor-area" v-if="mainImage">
         <div class="canvas-wrapper">
-          <canvas ref="imageCanvas" class="editor-canvas"></canvas>
+          <canvas
+            ref="imageCanvas"
+            :key="`watermark-canvas-${Date.now()}`"
+            class="editor-canvas">
+          </canvas>
         </div>
 
         <div class="controls-panel">

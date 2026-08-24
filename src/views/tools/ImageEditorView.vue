@@ -20,6 +20,7 @@
         <div class="canvas-section">
           <canvas
             ref="editorCanvas"
+            :key="`canvas-${Date.now()}`"
             class="editor-canvas"
           ></canvas>
           <small v-if="canvasDimensions">{{ canvasDimensions }}</small>

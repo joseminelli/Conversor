@@ -20,7 +20,10 @@
         <div class="waveform-section">
           <canvas
             ref="waveformCanvas"
+            :key="`waveform-${Date.now()}`"
             class="waveform-canvas"
+            width="800"
+            height="150"
             @click="onWaveformClick"
           ></canvas>
           <div class="playhead" ref="playhead"></div>

@@ -16,7 +16,7 @@
         />
       </div>
 
-      <div class="controls-panel" v-show="originalImage">
+      <div class="controls-panel" v-if="originalImage">
         <LabeledSlider
           id="quality"
           label="Qualidade"
@@ -57,21 +57,21 @@
         </div>
       </div>
 
-      <div class="preview-section" v-show="originalImage">
+      <div class="preview-section" v-if="originalImage && compressedDataUrl">
         <div class="preview-item">
           <h3>Original</h3>
-          <img v-show="originalImage" :src="originalImage?.src" alt="Original" />
+          <img :key="`original-${Date.now()}`" :src="originalImage.src" alt="Original" />
           <p class="file-size" v-if="originalFileSize">{{ originalFileSize }}</p>
         </div>
 
         <div class="preview-item">
           <h3>Comprimida</h3>
-          <img v-show="compressedDataUrl" :src="compressedDataUrl" alt="Comprimida" />
+          <img :key="`compressed-${Date.now()}`" :src="compressedDataUrl" alt="Comprimida" />
           <p class="file-size" v-if="compressedFileSize">{{ compressedFileSize }}</p>
         </div>
       </div>
 
-      <div class="action-buttons" v-show="originalImage">
+      <div class="action-buttons" v-if="originalImage">
         <button @click="resetState" class="btn btn-secondary">
           <i class="fa-solid fa-arrow-rotate-left"></i> Nova Imagem
         </button>
