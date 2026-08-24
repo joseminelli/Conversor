@@ -2,19 +2,32 @@
   <div class="app-container">
     <AppHeader />
     <main class="main-content">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <Transition name="fade" mode="out-in">
+          <component :is="Component" :key="$route.path" />
+        </Transition>
+      </router-view>
     </main>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import gsap from 'gsap'
 import AppHeader from './components/layout/AppHeader.vue'
 
 export default defineComponent({
   name: 'App',
   components: {
     AppHeader
+  },
+  setup() {
+    return {
+      enterActiveClass: 'fade-enter-active',
+      leaveActiveClass: 'fade-leave-active',
+      enterFromClass: 'fade-enter-from',
+      leaveToClass: 'fade-leave-to'
+    }
   }
 })
 </script>
@@ -30,5 +43,15 @@ export default defineComponent({
 .main-content {
   flex: 1;
   width: 100%;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

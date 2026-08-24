@@ -1,18 +1,19 @@
 <template>
   <div class="hub-container">
-    <h1>Suíte de Ferramentas</h1>
-    <p class="subtitle">
+    <h1 ref="title">Suíte de Ferramentas</h1>
+    <p class="subtitle" ref="subtitle">
       Todas as suas conversões e utilitários em um só lugar.
     </p>
 
-    <div class="tool-grid">
-      <HubToolCard v-for="tool in tools" :key="tool.id" :tool="tool" />
+    <div class="tool-grid" ref="grid">
+      <HubToolCard v-for="tool in tools" :key="tool.id" :tool="tool" class="tool-card-item" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import gsap from 'gsap'
 import { tools } from '@/data/toolsRegistry'
 import HubToolCard from '@/components/layout/HubToolCard.vue'
 
@@ -24,6 +25,52 @@ export default defineComponent({
   data() {
     return {
       tools
+    }
+  },
+  mounted() {
+    this.animateEntry()
+  },
+  methods: {
+    animateEntry() {
+      const timeline = gsap.timeline()
+
+      // Animate title
+      timeline.from(
+        this.$refs.title,
+        {
+          opacity: 0,
+          y: -20,
+          duration: 0.6,
+          ease: 'power2.out'
+        },
+        0
+      )
+
+      // Animate subtitle
+      timeline.from(
+        this.$refs.subtitle,
+        {
+          opacity: 0,
+          y: -10,
+          duration: 0.6,
+          ease: 'power2.out'
+        },
+        0.2
+      )
+
+      // Animate cards with stagger
+      const cards = this.$refs.grid?.querySelectorAll('.tool-card-item') || []
+      timeline.from(
+        cards,
+        {
+          opacity: 0,
+          y: 20,
+          duration: 0.5,
+          stagger: 0.08,
+          ease: 'back.out(1.3)'
+        },
+        0.4
+      )
     }
   }
 })
