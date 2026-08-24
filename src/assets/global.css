@@ -1,0 +1,249 @@
+:root {
+  --gradient: linear-gradient(135deg, #8ab4f8, #c58af9, #f48aab);
+  --text-color: #e4e4e4;
+  --bg-color: #121212;
+  --container-bg: rgba(28, 28, 30, 0.75);
+  --input-bg: rgba(40, 40, 40, 0.8);
+  --accent-color: #8ab4f8;
+  --header-height: 70px;
+  --font-family: 'Lexend', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding-top: var(--header-height);
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Dropdown styles */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 150%;
+  left: -40%;
+  transform: translateX(-50%);
+  background: #1f1f1f;
+  border-radius: 8px;
+  padding: 10px 0;
+  list-style: none;
+  min-width: 200px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeIn 0.2s ease-out;
+  z-index: 100;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 12px 20px;
+  white-space: nowrap;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.dropdown-menu a:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Card com borda gradiente */
+.content-card {
+  width: 100%;
+  max-width: 550px;
+  background: var(--container-bg);
+  border-radius: 16px;
+  padding: 3px;
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  position: relative;
+  margin: 0 auto;
+}
+
+.content-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  margin: -3px;
+  border-radius: inherit;
+  background: var(--gradient);
+}
+
+.card-inner {
+  background: #1c1c1e;
+  padding: 30px 40px;
+  border-radius: 13px;
+}
+
+.card-inner h1 {
+  font-size: 2rem;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.card-inner p {
+  opacity: 0.8;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* Tool grid styles */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.tool-card {
+  background: var(--container-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 25px;
+  text-decoration: none;
+  color: var(--text-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.tool-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border-color: var(--accent-color);
+}
+
+.tool-card .icon {
+  font-size: 2rem;
+  color: var(--accent-color);
+  margin-bottom: 15px;
+}
+
+.tool-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.tool-card p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* Form styles */
+input[type="file"] {
+  display: none;
+}
+
+label.file-upload-zone {
+  display: block;
+  padding: 40px 20px;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--input-bg);
+  text-align: center;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+label.file-upload-zone:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-color);
+  transform: scale(1.02);
+}
+
+label.file-upload-zone i {
+  font-size: 2.5rem;
+  color: var(--accent-color);
+  margin-bottom: 10px;
+  display: block;
+}
+
+label.file-upload-zone p {
+  margin: 10px 0 5px 0;
+  font-weight: 500;
+}
+
+label.file-upload-zone small {
+  opacity: 0.6;
+  display: block;
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-inner {
+    padding: 20px;
+  }
+
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
+}
