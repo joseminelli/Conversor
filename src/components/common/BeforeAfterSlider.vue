@@ -17,8 +17,8 @@
 
       <!-- After Image (clipped) -->
       <div
+        ref="afterImageDiv"
         class="after-image"
-        :style="{ clipPath: `inset(0 0 0 ${100 - sliderPosition}%)` }"
       >
         <img
           :src="afterSrc"
@@ -36,9 +36,8 @@
 
       <!-- Slider Handle -->
       <div
+        ref="sliderHandle"
         class="slider-handle"
-        :style="{ left: `${sliderPosition}%` }"
-        @mousedown.prevent="startDragging"
       >
         <div class="slider-line"></div>
         <div class="slider-arrows">
@@ -118,6 +117,18 @@ export default defineComponent({
     this.boundStopDragging = this.stopDragging.bind(this)
     this.boundStopPan = this.stopPan.bind(this)
 
+    const sliderHandle = this.$refs.sliderHandle as HTMLElement | undefined
+    const afterImage = this.$refs.afterImageDiv as HTMLElement | undefined
+
+    if (sliderHandle) {
+      sliderHandle.addEventListener('mousedown', this.startDragging.bind(this))
+      sliderHandle.style.setProperty('--slider-position', '50%')
+    }
+
+    if (afterImage) {
+      afterImage.style.setProperty('--clip-amount', '50%')
+    }
+
     document.addEventListener('mousemove', this.boundHandleDrag)
     document.addEventListener('mouseup', this.boundStopDragging)
   },
@@ -127,22 +138,25 @@ export default defineComponent({
     document.removeEventListener('mouseup', this.boundStopPan)
   },
   methods: {
-    startDragging() {
+    startDragging(e: MouseEvent) {
       this.isDragging = true
+      e.preventDefault()
     },
     handleDrag(event: MouseEvent) {
       if (!this.isDragging) return
 
-      requestAnimationFrame(() => {
-        const wrapper = this.$refs.wrapper as HTMLElement | undefined
-        if (!wrapper) return
+      const wrapper = this.$refs.wrapper as HTMLElement | undefined
+      const handle = this.$refs.sliderHandle as HTMLElement | undefined
+      const afterImage = this.$refs.afterImageDiv as HTMLElement | undefined
+      if (!wrapper || !handle || !afterImage) return
 
-        const rect = wrapper.getBoundingClientRect()
-        const x = event.clientX - rect.left
-        const position = Math.max(0, Math.min(100, (x / rect.width) * 100))
+      const rect = wrapper.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const position = Math.max(0, Math.min(100, (x / rect.width) * 100))
 
-        this.sliderPosition = position
-      })
+      this.sliderPosition = position
+      handle.style.setProperty('--slider-position', `${position}%`)
+      afterImage.style.setProperty('--clip-amount', `${100 - position}%`)
     },
     stopDragging() {
       this.isDragging = false
@@ -256,7 +270,7 @@ export default defineComponent({
 }
 
 .after-image {
-  clip-path: inset(0 50% 0 0) !important;
+  clip-path: inset(0 var(--clip-amount, 50%) 0 0);
   will-change: clip-path;
 }
 
@@ -309,6 +323,7 @@ export default defineComponent({
   -moz-user-select: none;
   -webkit-user-drag: none;
   margin-left: -20px;
+  left: var(--slider-position, 50%);
 }
 
 .comparison-wrapper:hover .slider-handle {
