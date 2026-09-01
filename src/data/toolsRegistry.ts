@@ -72,6 +72,14 @@ export const tools: ToolMeta[] = [
     icon: 'fa-language',
     route: '/text-converter',
     category: 'utilitários'
+  },
+  {
+    id: 'image-batch-resizer',
+    title: 'Redimensionador em Lote',
+    description: 'Redimensione múltiplas imagens de uma vez com as mesmas configurações.',
+    icon: 'fa-images',
+    route: '/image-batch-resizer',
+    category: 'imagens'
   }
 ]
 

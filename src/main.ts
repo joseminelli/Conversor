@@ -20,6 +20,7 @@ import AudioCutterView from './views/tools/AudioCutterView.vue'
 import AudioConverterView from './views/tools/AudioConverterView.vue'
 import QrCodeGeneratorView from './views/tools/QrCodeGeneratorView.vue'
 import TextConverterView from './views/tools/TextConverterView.vue'
+import ImageBatchResizerView from './views/tools/ImageBatchResizerView.vue'
 
 const app = createApp(App)
 
@@ -80,6 +81,11 @@ const router = createRouter({
       path: '/text-converter',
       name: 'TextConverter',
       component: TextConverterView
+    },
+    {
+      path: '/image-batch-resizer',
+      name: 'ImageBatchResizer',
+      component: ImageBatchResizerView
     },
     {
       path: '/:pathMatch(.*)*',

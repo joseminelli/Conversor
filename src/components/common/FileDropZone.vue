@@ -76,7 +76,9 @@ export default defineComponent({
         }
       }
 
-      if (this.acceptTypes.length > 0) {
+      const isZip = file.type === 'application/zip' || file.name.endsWith('.zip')
+
+      if (this.acceptTypes.length > 0 && !isZip) {
         const isAccepted = this.acceptTypes.some(type => {
           if (type.includes('*')) {
             const [mainType] = type.split('/')
@@ -97,15 +99,20 @@ export default defineComponent({
     },
     onDragOver(event: DragEvent) {
       if (event.dataTransfer?.items) {
-        const hasInvalidType = Array.from(event.dataTransfer.items).some(
-          item => this.acceptTypes.length > 0 && !this.acceptTypes.some(type => {
+        const hasInvalidType = Array.from(event.dataTransfer.items).some(item => {
+          if (this.acceptTypes.length === 0) return false
+
+          const isZip = item.type === 'application/zip'
+          if (isZip) return false
+
+          return !this.acceptTypes.some(type => {
             if (type.includes('*')) {
               const [mainType] = type.split('/')
               return item.type.startsWith(mainType)
             }
             return item.type === type
           })
-        )
+        })
 
         if (hasInvalidType) {
           this.isDraggingReject = true
