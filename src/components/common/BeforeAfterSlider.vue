@@ -1,6 +1,6 @@
 <template>
   <div class="before-after-container">
-    <div class="comparison-wrapper" ref="wrapper" @mousemove="handleMouseMove" @mouseleave="handleMouseLeave">
+    <div class="comparison-wrapper" ref="wrapper" @mousemove="handleMouseMove" @touchmove="handleMouseMove" @mouseleave="handleMouseLeave">
       <!-- Before Image -->
       <div class="before-image">
         <img
@@ -9,6 +9,7 @@
           :style="{ transform: `scale(${zoom}) translate(${panX}px, ${panY}px)` }"
           :class="{ dragging: isPanning }"
           @mousedown="startPan"
+          @touchstart="startPan"
         />
         <span v-if="sliderPosition < 60" class="label before-label">
           {{ beforeLabel }}
@@ -26,6 +27,7 @@
           :style="{ transform: `scale(${zoom}) translate(${panX}px, ${panY}px)` }"
           :class="{ dragging: isPanning }"
           @mousedown="startPan"
+          @touchstart="startPan"
         />
       </div>
 
@@ -109,19 +111,24 @@ export default defineComponent({
       panStartPanY: 0,
       boundHandleDrag: null as any,
       boundStopDragging: null as any,
-      boundStopPan: null as any
+      boundStopPan: null as any,
+      boundHandleTouchDrag: null as any,
+      boundStopTouchDrag: null as any
     }
   },
   mounted() {
     this.boundHandleDrag = this.handleDrag.bind(this)
     this.boundStopDragging = this.stopDragging.bind(this)
     this.boundStopPan = this.stopPan.bind(this)
+    this.boundHandleTouchDrag = this.handleTouchDrag.bind(this)
+    this.boundStopTouchDrag = this.stopTouchDrag.bind(this)
 
     const sliderHandle = this.$refs.sliderHandle as HTMLElement | undefined
     const afterImage = this.$refs.afterImageDiv as HTMLElement | undefined
 
     if (sliderHandle) {
       sliderHandle.addEventListener('mousedown', this.startDragging.bind(this))
+      sliderHandle.addEventListener('touchstart', this.startDragging.bind(this))
       sliderHandle.style.setProperty('--slider-position', '50%')
     }
 
@@ -131,14 +138,18 @@ export default defineComponent({
 
     document.addEventListener('mousemove', this.boundHandleDrag)
     document.addEventListener('mouseup', this.boundStopDragging)
+    document.addEventListener('touchmove', this.boundHandleTouchDrag)
+    document.addEventListener('touchend', this.boundStopTouchDrag)
   },
   beforeUnmount() {
     document.removeEventListener('mousemove', this.boundHandleDrag)
     document.removeEventListener('mouseup', this.boundStopDragging)
     document.removeEventListener('mouseup', this.boundStopPan)
+    document.removeEventListener('touchmove', this.boundHandleTouchDrag)
+    document.removeEventListener('touchend', this.boundStopTouchDrag)
   },
   methods: {
-    startDragging(e: MouseEvent) {
+    startDragging(e: MouseEvent | TouchEvent) {
       this.isDragging = true
       e.preventDefault()
     },
@@ -158,28 +169,54 @@ export default defineComponent({
       handle.style.setProperty('--slider-position', `${position}%`)
       afterImage.style.setProperty('--clip-amount', `${100 - position}%`)
     },
+    handleTouchDrag(event: TouchEvent) {
+      if (!this.isDragging || event.touches.length === 0) return
+
+      const wrapper = this.$refs.wrapper as HTMLElement | undefined
+      const handle = this.$refs.sliderHandle as HTMLElement | undefined
+      const afterImage = this.$refs.afterImageDiv as HTMLElement | undefined
+      if (!wrapper || !handle || !afterImage) return
+
+      const rect = wrapper.getBoundingClientRect()
+      const x = event.touches[0].clientX - rect.left
+      const position = Math.max(0, Math.min(100, (x / rect.width) * 100))
+
+      this.sliderPosition = position
+      handle.style.setProperty('--slider-position', `${position}%`)
+      afterImage.style.setProperty('--clip-amount', `${100 - position}%`)
+    },
     stopDragging() {
       this.isDragging = false
     },
-    startPan(event: MouseEvent) {
+    stopTouchDrag() {
+      this.isDragging = false
+    },
+    startPan(event: MouseEvent | TouchEvent) {
       if (this.zoom <= 1) return
       event.preventDefault()
       this.isPanning = true
-      this.panStartX = event.clientX
-      this.panStartY = event.clientY
+      const clientX = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX
+      const clientY = event instanceof MouseEvent ? event.clientY : event.touches[0].clientY
+      this.panStartX = clientX
+      this.panStartY = clientY
       this.panStartPanX = this.panX
       this.panStartPanY = this.panY
       document.addEventListener('mouseup', this.boundStopPan)
+      document.addEventListener('touchend', this.boundStopPan)
     },
     stopPan() {
       this.isPanning = false
       document.removeEventListener('mouseup', this.boundStopPan)
+      document.removeEventListener('touchend', this.boundStopPan)
     },
-    handleMouseMove(event: MouseEvent) {
+    handleMouseMove(event: MouseEvent | TouchEvent) {
       if (!this.isPanning || this.zoom <= 1) return
 
-      const deltaX = event.clientX - this.panStartX
-      const deltaY = event.clientY - this.panStartY
+      const clientX = event instanceof MouseEvent ? event.clientX : event.touches?.[0]?.clientX ?? 0
+      const clientY = event instanceof MouseEvent ? event.clientY : event.touches?.[0]?.clientY ?? 0
+
+      const deltaX = clientX - this.panStartX
+      const deltaY = clientY - this.panStartY
 
       const wrapper = this.$refs.wrapper as HTMLElement | undefined
       if (!wrapper) return
