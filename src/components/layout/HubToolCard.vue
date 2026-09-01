@@ -1,6 +1,9 @@
 <template>
   <router-link v-if="!tool.external" :to="tool.route" class="tool-card">
     <div class="card-background"></div>
+    <button v-if="showFavoriteButton" class="favorite-btn" :class="{ favorited: isFavorite }" @click.prevent="toggleFavorite" :title="isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'">
+      <i :class="`fa-${isFavorite ? 'solid' : 'regular'} fa-star`"></i>
+    </button>
     <div class="icon-wrapper">
       <div class="icon-bg"></div>
       <i :class="`fa-solid ${tool.icon}`"></i>
@@ -28,6 +31,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import type { ToolMeta } from '@/types/tools'
+import { isFavorite, toggleFavorite } from '@/utils/storage'
 
 export default defineComponent({
   name: 'HubToolCard',
@@ -35,6 +39,42 @@ export default defineComponent({
     tool: {
       type: Object as PropType<ToolMeta>,
       required: true
+    },
+    showFavoriteButton: {
+      type: Boolean,
+      default: true
+    }
+  },
+  data() {
+    return {
+      isFavorite: false
+    }
+  },
+  mounted() {
+    this.checkFavorite()
+    window.addEventListener('storage', this.onStorageChange)
+  },
+  beforeUnmount() {
+    window.removeEventListener('storage', this.onStorageChange)
+  },
+  methods: {
+    checkFavorite() {
+      this.isFavorite = isFavorite(this.tool.id)
+    },
+    toggleFavorite() {
+      toggleFavorite(this.tool.id)
+      this.isFavorite = !this.isFavorite
+      window.dispatchEvent(new CustomEvent('favorites-changed'))
+    },
+    onStorageChange() {
+      this.checkFavorite()
+    }
+  },
+  watch: {
+    'tool.id': {
+      handler() {
+        this.checkFavorite()
+      }
     }
   }
 })
@@ -140,6 +180,47 @@ p {
   opacity: 0.65;
   margin: 0 0 15px 0;
   flex-grow: 1;
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(138, 180, 248, 0.1);
+  border: 1px solid rgba(138, 180, 248, 0.2);
+  border-radius: 8px;
+  color: rgba(138, 180, 248, 0.6);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.favorite-btn:hover {
+  background: rgba(138, 180, 248, 0.2);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.favorite-btn.favorited {
+  background: rgba(248, 165, 71, 0.15);
+  border-color: #faa54a;
+  color: #faa54a;
+}
+
+.favorite-btn.favorited:hover {
+  background: rgba(248, 165, 71, 0.25);
+  border-color: #faa54a;
+  box-shadow: 0 0 12px rgba(250, 165, 74, 0.3);
+}
+
+.favorite-btn i {
+  font-size: 1rem;
+  transition: all 0.2s ease;
 }
 
 .arrow {

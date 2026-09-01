@@ -3,6 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { createDiscreteApi } from 'naive-ui'
 
 import App from './App.vue'
+import { getToolByRoute } from './data/toolsRegistry'
+import { pushRecentTool } from './utils/storage'
 
 import './assets/global.css'
 import './assets/fonts.css'
@@ -87,5 +89,14 @@ const router = createRouter({
 })
 
 app.use(router)
+
+router.afterEach((to) => {
+  if (to.path !== '/') {
+    const tool = getToolByRoute(to.path)
+    if (tool) {
+      pushRecentTool(tool.id)
+    }
+  }
+})
 
 app.mount('#app')

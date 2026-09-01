@@ -8,6 +8,9 @@
         </router-link>
       </div>
 
+      <!-- Desktop Search -->
+      <SearchBar class="desktop-search" />
+
       <!-- Desktop Navigation -->
       <nav class="desktop-nav">
         <div class="nav-dropdown" v-for="category in categories" :key="category">
@@ -64,9 +67,13 @@ import { defineComponent } from 'vue'
 import { useRoute } from 'vue-router'
 import { getToolsByCategory } from '@/data/toolsRegistry'
 import type { ToolCategory } from '@/types/tools'
+import SearchBar from '@/components/common/SearchBar.vue'
 
 export default defineComponent({
   name: 'AppHeader',
+  components: {
+    SearchBar
+  },
   data() {
     return {
       categories: ['imagens', 'áudio', 'utilitários'] as ToolCategory[],
@@ -177,10 +184,21 @@ export default defineComponent({
   }
 }
 
+/* Desktop Search */
+.desktop-search {
+  display: none;
+  margin-left: 20px;
+}
+
+@media (min-width: 769px) {
+  .desktop-search {
+    display: block;
+  }
+}
+
 /* Desktop Navigation */
 .desktop-nav {
   display: none;
-  margin-left: auto;
   gap: 5px;
 }
 

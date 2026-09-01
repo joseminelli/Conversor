@@ -17,6 +17,48 @@
 
     <!-- Categories Section -->
     <div class="categories-wrapper">
+      <!-- Favorites Section -->
+      <section v-if="favoriteTools.length > 0" class="category-section" ref="favoritesSection">
+        <div class="category-header">
+          <div class="category-icon">
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <div>
+            <h2>⭐ Seus Favoritos</h2>
+            <p>Ferramentas que você marca para acessar rápido</p>
+          </div>
+        </div>
+        <div class="tool-grid">
+          <HubToolCard
+            v-for="tool in favoriteTools"
+            :key="tool.id"
+            :tool="tool"
+            class="tool-card-item"
+          />
+        </div>
+      </section>
+
+      <!-- Recent Tools Section -->
+      <section v-if="recentTools.length > 0" class="category-section" ref="recentsSection">
+        <div class="category-header">
+          <div class="category-icon">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <div>
+            <h2>🕐 Usados Recentemente</h2>
+            <p>Ferramentas que você acessou por último</p>
+          </div>
+        </div>
+        <div class="tool-grid">
+          <HubToolCard
+            v-for="tool in recentTools"
+            :key="tool.id"
+            :tool="tool"
+            class="tool-card-item"
+          />
+        </div>
+      </section>
+
       <!-- Image Tools -->
       <section class="category-section" ref="imageSection">
         <div class="category-header">
@@ -86,13 +128,21 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import gsap from 'gsap'
-import { getToolsByCategory } from '@/data/toolsRegistry'
+import { getToolsByCategory, tools as allTools } from '@/data/toolsRegistry'
+import { getFavorites, getRecentTools } from '@/utils/storage'
 import HubToolCard from '@/components/layout/HubToolCard.vue'
+import type { ToolMeta } from '@/types/tools'
 
 export default defineComponent({
   name: 'HomeView',
   components: {
     HubToolCard
+  },
+  data() {
+    return {
+      favoriteTools: [] as ToolMeta[],
+      recentTools: [] as ToolMeta[]
+    }
   },
   computed: {
     imageTools() {
@@ -106,9 +156,34 @@ export default defineComponent({
     }
   },
   mounted() {
+    this.loadFavoritesAndRecents()
     this.animateEntry()
+    window.addEventListener('favorites-changed', this.onFavoritesChanged)
+    window.addEventListener('storage', this.onStorageChanged)
+  },
+  beforeUnmount() {
+    window.removeEventListener('favorites-changed', this.onFavoritesChanged)
+    window.removeEventListener('storage', this.onStorageChanged)
   },
   methods: {
+    loadFavoritesAndRecents() {
+      const favoriteIds = getFavorites()
+      const recentIds = getRecentTools()
+
+      this.favoriteTools = favoriteIds
+        .map(id => allTools.find(t => t.id === id))
+        .filter((tool): tool is ToolMeta => tool !== undefined)
+
+      this.recentTools = recentIds
+        .map(id => allTools.find(t => t.id === id))
+        .filter((tool): tool is ToolMeta => tool !== undefined)
+    },
+    onFavoritesChanged() {
+      this.loadFavoritesAndRecents()
+    },
+    onStorageChanged() {
+      this.loadFavoritesAndRecents()
+    },
     animateEntry() {
       const timeline = gsap.timeline()
 
@@ -172,11 +247,13 @@ export default defineComponent({
       }
 
       // Animate category sections
+      const favoritesSection = this.$refs.favoritesSection as HTMLElement | undefined
+      const recentsSection = this.$refs.recentsSection as HTMLElement | undefined
       const imageSection = this.$refs.imageSection as HTMLElement | undefined
       const audioSection = this.$refs.audioSection as HTMLElement | undefined
       const utilitySection = this.$refs.utilitySection as HTMLElement | undefined
 
-      const sections = [imageSection, audioSection, utilitySection].filter(Boolean)
+      const sections = [favoritesSection, recentsSection, imageSection, audioSection, utilitySection].filter(Boolean)
 
       sections.forEach((section, index) => {
         if (section) {
