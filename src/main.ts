@@ -21,6 +21,8 @@ import AudioConverterView from './views/tools/AudioConverterView.vue'
 import QrCodeGeneratorView from './views/tools/QrCodeGeneratorView.vue'
 import TextConverterView from './views/tools/TextConverterView.vue'
 import ImageBatchResizerView from './views/tools/ImageBatchResizerView.vue'
+import DocumentConverterView from './views/tools/DocumentConverterView.vue'
+import PdfCompressorView from './views/tools/PdfCompressorView.vue'
 
 const app = createApp(App)
 
@@ -86,6 +88,16 @@ const router = createRouter({
       path: '/image-batch-resizer',
       name: 'ImageBatchResizer',
       component: ImageBatchResizerView
+    },
+    {
+      path: '/document-converter',
+      name: 'DocumentConverter',
+      component: DocumentConverterView
+    },
+    {
+      path: '/pdf-compressor',
+      name: 'PdfCompressor',
+      component: PdfCompressorView
     },
     {
       path: '/:pathMatch(.*)*',

@@ -80,6 +80,22 @@ export const tools: ToolMeta[] = [
     icon: 'fa-images',
     route: '/image-batch-resizer',
     category: 'imagens'
+  },
+  {
+    id: 'document-converter',
+    title: 'Conversor de Documentos',
+    description: 'Converta entre PDF e imagens com facilidade.',
+    icon: 'fa-file-pdf',
+    route: '/document-converter',
+    category: 'documentos'
+  },
+  {
+    id: 'pdf-compressor',
+    title: 'Compressor de PDF',
+    description: 'Reduza o tamanho dos seus PDFs com dois modos de compressão.',
+    icon: 'fa-file-zipper',
+    route: '/pdf-compressor',
+    category: 'documentos'
   }
 ]
 

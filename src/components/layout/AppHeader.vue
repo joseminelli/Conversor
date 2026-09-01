@@ -76,7 +76,7 @@ export default defineComponent({
   },
   data() {
     return {
-      categories: ['imagens', 'áudio', 'utilitários'] as ToolCategory[],
+      categories: ['imagens', 'áudio', 'utilitários', 'documentos'] as ToolCategory[],
       openCategory: null as ToolCategory | null,
       mobileMenuOpen: false,
       mobileCategoryOpen: null as ToolCategory | null

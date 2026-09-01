@@ -121,6 +121,27 @@
           />
         </div>
       </section>
+
+      <!-- Document Tools -->
+      <section class="category-section" ref="documentSection">
+        <div class="category-header">
+          <div class="category-icon">
+            <i class="fa-solid fa-file-pdf"></i>
+          </div>
+          <div>
+            <h2>Documentos</h2>
+            <p>Converta, comprima e otimize seus PDFs</p>
+          </div>
+        </div>
+        <div class="tool-grid">
+          <HubToolCard
+            v-for="tool in documentTools"
+            :key="tool.id"
+            :tool="tool"
+            class="tool-card-item"
+          />
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -153,6 +174,9 @@ export default defineComponent({
     },
     utilityTools() {
       return getToolsByCategory('utilitários')
+    },
+    documentTools() {
+      return getToolsByCategory('documentos')
     }
   },
   mounted() {

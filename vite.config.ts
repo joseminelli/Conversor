@@ -13,5 +13,17 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      supported: {
+        bigint: true
+      }
+    }
+  },
+  build: {
+    rollupOptions: {
+      external: []
+    }
   }
 })

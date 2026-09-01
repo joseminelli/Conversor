@@ -2,7 +2,7 @@
   <div class="container">
     <div class="tool-header">
       <h1><i class="fa-solid fa-copyright"></i> Marca d'Água</h1>
-      <p>Aplique um texto ou logo como marca d'água em suas imagens de forma fácil</p>
+      <p>Aplique um texto ou logo como marca d'água e posicione arrastando</p>
     </div>
 
     <div class="tool-content">
@@ -20,8 +20,15 @@
         <div class="canvas-wrapper">
           <canvas
             ref="imageCanvas"
-            class="editor-canvas">
+            class="editor-canvas"
+            @mousedown="startDrag"
+            @touchstart="startDrag"
+            :class="{ dragging: isDragging }"
+          >
           </canvas>
+          <p class="drag-hint" v-if="!isDragging">
+            💡 Arraste para posicionar a marca d'água
+          </p>
         </div>
 
         <div class="controls-panel">
@@ -74,14 +81,21 @@
 
           <div class="tab-content" v-if="options.type === 'image'">
             <div class="control-group">
-              <label for="logo-upload">Fazer upload do logo:</label>
+              <label for="logo-upload" class="file-label">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                {{ logoFileName ? 'Logo carregado ✓' : 'Selecionar logo' }}
+              </label>
               <input
                 id="logo-upload"
                 type="file"
                 accept="image/*"
                 @change="handleLogoUpload"
               />
-              <small v-if="logoFileName">{{ logoFileName }}</small>
+            </div>
+
+            <div v-if="logoDataUrl" class="logo-preview">
+              <img :src="logoDataUrl" :alt="logoFileName" />
+              <span>{{ logoFileName }}</span>
             </div>
 
             <LabeledSlider
@@ -104,18 +118,19 @@
             @update:modelValue="redrawCanvas"
           />
 
-          <div class="position-grid">
-            <label>Posição:</label>
+          <div class="preset-positions">
+            <label>Presets de posição:</label>
             <div class="grid">
               <button
                 v-for="pos in positions"
                 :key="pos"
-                @click="options.position = pos"
+                @click="setPresetPosition(pos)"
                 :class="['pos-btn', { active: options.position === pos }]"
                 :title="pos"
               >
               </button>
             </div>
+            <small>Ou arraste no preview para posicionar livremente</small>
           </div>
 
           <div class="control-group">
@@ -155,7 +170,10 @@ export default defineComponent({
       mainImage: null as HTMLImageElement | null,
       watermarkImage: null as HTMLImageElement | null,
       logoFileName: '',
+      logoDataUrl: '',
       format: 'jpeg' as 'jpeg' | 'png' | 'webp',
+      isDragging: false,
+      dragStart: { x: 0, y: 0 },
       positions: [
         'top-left',
         'top-center',
@@ -172,10 +190,24 @@ export default defineComponent({
         text: 'Sua Marca',
         color: '#FFFFFF',
         size: 30,
-        opacity: 0.5,
-        position: 'center'
+        opacity: 50,
+        position: 'center',
+        customX: 0,
+        customY: 0
       }
     }
+  },
+  mounted() {
+    document.addEventListener('mousemove', this.handleDrag as any)
+    document.addEventListener('touchmove', this.handleDrag as any)
+    document.addEventListener('mouseup', this.stopDrag as any)
+    document.addEventListener('touchend', this.stopDrag as any)
+  },
+  beforeUnmount() {
+    document.removeEventListener('mousemove', this.handleDrag as any)
+    document.removeEventListener('touchmove', this.handleDrag as any)
+    document.removeEventListener('mouseup', this.stopDrag as any)
+    document.removeEventListener('touchend', this.stopDrag as any)
   },
   methods: {
     async handleMainImageUpload(file: File) {
@@ -189,6 +221,8 @@ export default defineComponent({
         const img = new Image()
         img.onload = async () => {
           this.mainImage = img
+          this.options.customX = 0
+          this.options.customY = 0
           await this.$nextTick()
           this.redrawCanvas()
         }
@@ -205,14 +239,49 @@ export default defineComponent({
       this.logoFileName = file.name
       const reader = new FileReader()
       reader.onload = (e) => {
+        this.logoDataUrl = e.target?.result as string
         const img = new Image()
         img.onload = () => {
           this.watermarkImage = img
           this.redrawCanvas()
         }
-        img.src = e.target?.result as string
+        img.src = this.logoDataUrl
       }
       reader.readAsDataURL(file)
+    },
+
+    startDrag(e: MouseEvent | TouchEvent) {
+      if (!this.mainImage) return
+      this.isDragging = true
+      const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX
+      const clientY = e instanceof MouseEvent ? e.clientY : e.touches[0].clientY
+      this.dragStart = { x: clientX, y: clientY }
+    },
+
+    handleDrag(e: MouseEvent | TouchEvent) {
+      if (!this.isDragging) return
+      const clientX = e instanceof MouseEvent ? e.clientX : e.touches?.[0]?.clientX ?? 0
+      const clientY = e instanceof MouseEvent ? e.clientY : e.touches?.[0]?.clientY ?? 0
+      const deltaX = clientX - this.dragStart.x
+      const deltaY = clientY - this.dragStart.y
+
+      const sensitivity = 2.5
+      this.options.customX += deltaX * sensitivity
+      this.options.customY += deltaY * sensitivity
+      this.dragStart = { x: clientX, y: clientY }
+      this.options.position = 'custom'
+      this.redrawCanvas()
+    },
+
+    stopDrag() {
+      this.isDragging = false
+    },
+
+    setPresetPosition(pos: string) {
+      this.options.position = pos
+      this.options.customX = 0
+      this.options.customY = 0
+      this.redrawCanvas()
     },
 
     redrawCanvas() {
@@ -263,49 +332,54 @@ export default defineComponent({
     },
 
     calculatePosition(w: number, h: number) {
-      const margin = 0.02 * (this.$refs.imageCanvas as HTMLCanvasElement).width
+      const margin = 0.04 * (this.$refs.imageCanvas as HTMLCanvasElement).width
       const canvasWidth = (this.$refs.imageCanvas as HTMLCanvasElement).width
       const canvasHeight = (this.$refs.imageCanvas as HTMLCanvasElement).height
       let x = 0,
         y = 0
 
-      switch (this.options.position) {
-        case 'top-left':
-          x = margin
-          y = 0
-          break
-        case 'top-center':
-          x = (canvasWidth - w) / 2
-          y = 0
-          break
-        case 'top-right':
-          x = canvasWidth - w - margin
-          y = 0
-          break
-        case 'center-left':
-          x = margin
-          y = (canvasHeight - h) / 2
-          break
-        case 'center':
-          x = (canvasWidth - w) / 2
-          y = (canvasHeight - h) / 2
-          break
-        case 'center-right':
-          x = canvasWidth - w - margin
-          y = (canvasHeight - h) / 2
-          break
-        case 'bottom-left':
-          x = margin
-          y = canvasHeight - h
-          break
-        case 'bottom-center':
-          x = (canvasWidth - w) / 2
-          y = canvasHeight - h
-          break
-        case 'bottom-right':
-          x = canvasWidth - w - margin
-          y = canvasHeight - h
-          break
+      if (this.options.position === 'custom') {
+        x = Math.max(0, Math.min(canvasWidth - w, this.options.customX))
+        y = Math.max(0, Math.min(canvasHeight - h, this.options.customY))
+      } else {
+        switch (this.options.position) {
+          case 'top-left':
+            x = margin
+            y = margin
+            break
+          case 'top-center':
+            x = (canvasWidth - w) / 2
+            y = margin
+            break
+          case 'top-right':
+            x = canvasWidth - w - margin
+            y = margin
+            break
+          case 'center-left':
+            x = margin
+            y = (canvasHeight - h) / 2
+            break
+          case 'center':
+            x = (canvasWidth - w) / 2
+            y = (canvasHeight - h) / 2
+            break
+          case 'center-right':
+            x = canvasWidth - w - margin
+            y = (canvasHeight - h) / 2
+            break
+          case 'bottom-left':
+            x = margin
+            y = canvasHeight - h - margin
+            break
+          case 'bottom-center':
+            x = (canvasWidth - w) / 2
+            y = canvasHeight - h - margin
+            break
+          case 'bottom-right':
+            x = canvasWidth - w - margin
+            y = canvasHeight - h - margin
+            break
+        }
       }
 
       if (this.options.type === 'text') y += this.options.size * 0.8
@@ -330,13 +404,16 @@ export default defineComponent({
       this.mainImage = null
       this.watermarkImage = null
       this.logoFileName = ''
+      this.logoDataUrl = ''
       this.options = {
-        type: 'text',
+        type: 'image',
         text: 'Sua Marca',
         color: '#FFFFFF',
         size: 30,
-        opacity: 0.5,
-        position: 'center'
+        opacity: 50,
+        position: 'center',
+        customX: 0,
+        customY: 0
       }
     }
   }
@@ -390,6 +467,7 @@ export default defineComponent({
   border-radius: 12px;
   padding: 20px;
   text-align: center;
+  position: relative;
 }
 
 .editor-canvas {
@@ -398,6 +476,20 @@ export default defineComponent({
   border-radius: 8px;
   display: block;
   margin: 0 auto;
+  cursor: grab;
+  transition: cursor 0.2s;
+}
+
+.editor-canvas.dragging {
+  cursor: grabbing;
+}
+
+.drag-hint {
+  font-size: 0.85rem;
+  color: var(--text-color);
+  opacity: 0.6;
+  margin-top: 12px;
+  font-style: italic;
 }
 
 .controls-panel {
@@ -472,9 +564,77 @@ export default defineComponent({
   display: none;
 }
 
+.file-label {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(138, 180, 248, 0.1);
+  border: 2px dashed rgba(138, 180, 248, 0.4);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: var(--accent-color);
+  margin: 0 !important;
+}
+
+.file-label:hover {
+  background: rgba(138, 180, 248, 0.15);
+  border-color: var(--accent-color);
+}
+
+.logo-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(138, 180, 248, 0.05);
+  border: 1px solid rgba(138, 180, 248, 0.2);
+  border-radius: 8px;
+}
+
+.logo-preview img {
+  max-width: 100%;
+  max-height: 80px;
+  border-radius: 4px;
+}
+
+.logo-preview span {
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.7;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
 .control-group small {
   opacity: 0.6;
   font-size: 0.8rem;
+}
+
+.preset-positions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.preset-positions label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.preset-positions small {
+  font-size: 0.75rem;
+  color: var(--text-color);
+  opacity: 0.6;
+  font-style: italic;
 }
 
 .position-grid {
