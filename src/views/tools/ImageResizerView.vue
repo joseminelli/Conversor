@@ -17,17 +17,25 @@
       </div>
 
       <div v-if="originalImage" class="editor-area">
-        <div class="canvas-container">
-          <canvas
-            ref="imageCanvas"
-            class="editor-canvas"
-            :class="{ cropping: isCroppingEnabled }"
-            @mousedown="onCanvasMouseDown"
-            @mousemove="onCanvasMouseMove"
-            @mouseup="onCanvasMouseUp"
-            @mouseleave="onCanvasMouseLeave"
-          ></canvas>
+        <div class="canvas-container" v-if="resizedImageDataUrl">
+          <BeforeAfterSlider
+            :beforeSrc="originalImage.src"
+            :afterSrc="resizedImageDataUrl"
+            beforeLabel="Original"
+            afterLabel="Redimensionada"
+          />
         </div>
+
+        <canvas
+          ref="imageCanvas"
+          class="editor-canvas"
+          :class="{ cropping: isCroppingEnabled }"
+          style="display: none"
+          @mousedown="onCanvasMouseDown"
+          @mousemove="onCanvasMouseMove"
+          @mouseup="onCanvasMouseUp"
+          @mouseleave="onCanvasMouseLeave"
+        ></canvas>
 
         <div class="controls-section">
           <div class="control-group">
@@ -47,6 +55,7 @@
             :min="10"
             :max="200"
             suffix="%"
+            @update:modelValue="updateResizedPreview"
           />
 
           <div class="control-group">
@@ -71,6 +80,7 @@
               :min="10"
               :max="100"
               suffix="%"
+              @update:modelValue="updateResizedPreview"
             />
           </div>
 
@@ -90,6 +100,7 @@
 import { defineComponent } from 'vue'
 import FileDropZone from '@/components/common/FileDropZone.vue'
 import LabeledSlider from '@/components/common/LabeledSlider.vue'
+import BeforeAfterSlider from '@/components/common/BeforeAfterSlider.vue'
 
 interface CropRect {
   x: number
@@ -102,12 +113,14 @@ export default defineComponent({
   name: 'ImageResizerView',
   components: {
     FileDropZone,
-    LabeledSlider
+    LabeledSlider,
+    BeforeAfterSlider
   },
   data() {
     return {
       originalImage: null as HTMLImageElement | null,
       originalFileName: '',
+      resizedImageDataUrl: '',
       isCroppingEnabled: false,
       isDragging: false,
       cropRect: {} as CropRect,
@@ -135,6 +148,11 @@ export default defineComponent({
       if (!width) return ''
       const scale = this.resizePercentage / 100
       return `${Math.round(width * scale)} × ${Math.round(height * scale)}`
+    }
+  },
+  watch: {
+    format() {
+      this.updateResizedPreview()
     }
   },
   methods: {
@@ -184,6 +202,45 @@ export default defineComponent({
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)'
         ctx.strokeRect(this.cropRect.x, this.cropRect.y, this.cropRect.width, this.cropRect.height)
       }
+
+      this.updateResizedPreview()
+    },
+
+    updateResizedPreview() {
+      if (!this.originalImage) return
+
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+
+      const sourceCanvas = this.$refs.imageCanvas as HTMLCanvasElement
+      const scaleToCanvas = this.originalImage.width / sourceCanvas.width
+
+      let sx = 0,
+        sy = 0,
+        sWidth = this.originalImage.width,
+        sHeight = this.originalImage.height
+
+      if (this.isCroppingEnabled && this.cropRect.width && this.cropRect.height) {
+        sx = Math.min(this.startDrag.x, this.startDrag.x + this.cropRect.width) * scaleToCanvas
+        sy = Math.min(this.startDrag.y, this.startDrag.y + this.cropRect.height) * scaleToCanvas
+        sWidth = Math.abs(this.cropRect.width) * scaleToCanvas
+        sHeight = Math.abs(this.cropRect.height) * scaleToCanvas
+      }
+
+      const scale = this.resizePercentage / 100
+      const finalWidth = Math.round(sWidth * scale)
+      const finalHeight = Math.round(sHeight * scale)
+
+      canvas.width = finalWidth
+      canvas.height = finalHeight
+
+      ctx.drawImage(this.originalImage, sx, sy, sWidth, sHeight, 0, 0, finalWidth, finalHeight)
+
+      const mimeType = this.format === 'jpeg' ? 'image/jpeg' : `image/${this.format}`
+      const qualityValue = this.quality / 100
+
+      this.resizedImageDataUrl = canvas.toDataURL(mimeType, qualityValue)
     },
 
     onCanvasMouseDown(e: MouseEvent) {

@@ -21,7 +21,7 @@
       </button>
     </div>
 
-    <div v-if="isFocused && results.length > 0" class="search-results">
+    <div v-if="isFocused && results.length > 0" class="search-results search-dropdown">
       <button
         v-for="(tool, index) in results"
         :key="tool.id"
@@ -187,6 +187,7 @@ export default defineComponent({
   opacity: 0.8;
 }
 
+.no-results,
 .search-results {
   position: absolute;
   top: 100%;

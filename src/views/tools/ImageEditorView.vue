@@ -17,13 +17,17 @@
       </div>
 
       <div v-if="originalImage" class="editor-layout">
-        <div class="canvas-section">
-          <canvas
-            ref="editorCanvas"
-            class="editor-canvas"
-          ></canvas>
-          <small v-if="canvasDimensions">{{ canvasDimensions }}</small>
+        <div class="canvas-section" v-if="editedImageDataUrl">
+          <BeforeAfterSlider
+            :beforeSrc="originalImage.src"
+            :afterSrc="editedImageDataUrl"
+            beforeLabel="Original"
+            afterLabel="Editada"
+          />
+          <small v-if="canvasDimensions" style="margin-top: 12px">{{ canvasDimensions }}</small>
         </div>
+
+        <canvas ref="editorCanvas" style="display: none"></canvas>
 
         <div class="controls-panel">
           <LabeledSlider
@@ -113,16 +117,19 @@
 import { defineComponent } from 'vue'
 import FileDropZone from '@/components/common/FileDropZone.vue'
 import LabeledSlider from '@/components/common/LabeledSlider.vue'
+import BeforeAfterSlider from '@/components/common/BeforeAfterSlider.vue'
 
 export default defineComponent({
   name: 'ImageEditorView',
   components: {
     FileDropZone,
-    LabeledSlider
+    LabeledSlider,
+    BeforeAfterSlider
   },
   data() {
     return {
       originalImage: null as HTMLImageElement | null,
+      editedImageDataUrl: '',
       canvasDimensions: '',
       brightness: 100,
       contrast: 100,
@@ -183,6 +190,8 @@ export default defineComponent({
       if (this.filters.grayscale || this.filters.invert || this.filters.sepia) {
         this.applyPixelFilters(ctx)
       }
+
+      this.editedImageDataUrl = canvas.toDataURL('image/png')
     },
 
     applyPixelFilters(ctx: CanvasRenderingContext2D) {

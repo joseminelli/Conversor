@@ -486,6 +486,61 @@ label.file-upload-zone small {
   cursor: not-allowed;
 }
 
+/* Scrollbar Styles */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(138, 180, 248, 0.5) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(138, 180, 248, 0.5);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(138, 180, 248, 0.8);
+  background-clip: content-box;
+}
+
+/* Custom scrollbar for dropdown/search results */
+.search-dropdown,
+.batch-queue-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(138, 180, 248, 0.5) transparent;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.search-dropdown::-webkit-scrollbar,
+.batch-queue-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.search-dropdown::-webkit-scrollbar-thumb,
+.batch-queue-list::-webkit-scrollbar-thumb {
+  background: rgba(138, 180, 248, 0.5);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.search-dropdown::-webkit-scrollbar-thumb:hover,
+.batch-queue-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(138, 180, 248, 0.8);
+  background-clip: content-box;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .card-inner {

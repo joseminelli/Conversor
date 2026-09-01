@@ -58,17 +58,18 @@
       </div>
 
       <div class="preview-section" v-if="originalImage && compressedDataUrl">
-        <div class="preview-item">
-          <h3>Original</h3>
-          <img :src="originalImage.src" alt="Original" />
-          <p class="file-size" v-if="originalFileSize">{{ originalFileSize }}</p>
+        <div class="comparison-info">
+          <div class="size-info">
+            <span>{{ originalFileSize }}</span>
+            <span class="compression" v-if="compressedFileSize">{{ compressedFileSize }}</span>
+          </div>
         </div>
-
-        <div class="preview-item">
-          <h3>Comprimida</h3>
-          <img :src="compressedDataUrl" alt="Comprimida" />
-          <p class="file-size" v-if="compressedFileSize">{{ compressedFileSize }}</p>
-        </div>
+        <BeforeAfterSlider
+          :beforeSrc="originalDataUrl"
+          :afterSrc="compressedDataUrl"
+          beforeLabel="Comprimido"
+          afterLabel="Original"
+        />
       </div>
 
       <div class="action-buttons" v-if="originalImage">
@@ -87,11 +88,13 @@
 import { defineComponent } from 'vue'
 import FileDropZone from '@/components/common/FileDropZone.vue'
 import LabeledSlider from '@/components/common/LabeledSlider.vue'
+import BeforeAfterSlider from '@/components/common/BeforeAfterSlider.vue'
 import { formatFileSize, getCompressionPercentage } from '@/utils/file'
 
 interface ImageState {
   originalImage: HTMLImageElement | null
   originalFile: File | null
+  originalDataUrl: string
   compressedBlob: Blob | null
   compressedDataUrl: string
   quality: number
@@ -103,12 +106,14 @@ export default defineComponent({
   name: 'ImageCompressorView',
   components: {
     FileDropZone,
-    LabeledSlider
+    LabeledSlider,
+    BeforeAfterSlider
   },
   data(): ImageState {
     return {
       originalImage: null,
       originalFile: null,
+      originalDataUrl: '',
       compressedBlob: null,
       compressedDataUrl: '',
       quality: 80,
@@ -139,13 +144,16 @@ export default defineComponent({
       this.originalFile = file
       const reader = new FileReader()
       reader.onload = async (event) => {
+        const dataUrl = event.target?.result as string
+        this.originalDataUrl = dataUrl
+
         const img = new Image()
         img.onload = async () => {
           this.originalImage = img
           await this.$nextTick()
           this.compressImage()
         }
-        img.src = event.target?.result as string
+        img.src = dataUrl
       }
       reader.readAsDataURL(file)
     },
@@ -199,6 +207,7 @@ export default defineComponent({
     resetState() {
       this.originalImage = null
       this.originalFile = null
+      this.originalDataUrl = ''
       this.compressedBlob = null
       this.compressedDataUrl = ''
       this.quality = 80
@@ -210,5 +219,34 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Page-specific styles can be added here if needed */
+.preview-section {
+  margin-top: 30px;
+}
+
+.comparison-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: rgba(138, 180, 248, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(138, 180, 248, 0.15);
+}
+
+.size-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.size-info span {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.compression {
+  color: var(--accent-color);
+  font-weight: 600;
+}
 </style>
