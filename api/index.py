@@ -47,8 +47,6 @@ try:
             }
         }
 
-    handler = app
-
 except Exception as e:
     print(f"Error loading app: {str(e)}")
     import traceback
