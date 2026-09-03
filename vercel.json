@@ -1,7 +1,4 @@
 {
-  "buildCommand": "cd api && pip install -r requirements.txt",
-  "startCommand": "cd api && python -m uvicorn index:app --host 0.0.0.0 --port 8000",
-  "env": {
-    "PYTHON_VERSION": "3.12"
-  }
+  "buildCommand": "pip install -r api/requirements.txt",
+  "outputDirectory": "api"
 }
