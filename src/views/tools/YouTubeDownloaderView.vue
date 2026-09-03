@@ -73,7 +73,7 @@
             <div class="audio-select">
               <select v-model="selectedAudioTrack" class="select-field">
                 <option v-for="track in audioTracks" :key="track.format_id" :value="track.format_id">
-                  {{ track.language }} {{ track.is_original ? '(Original)' : '' }} - {{ track.codec || 'N/A' }}
+                  {{ track.is_original ? 'Original' : track.language }}
                 </option>
               </select>
             </div>
@@ -719,6 +719,21 @@ export default defineComponent({
   outline: none;
   border-color: var(--accent-color);
   box-shadow: 0 0 20px rgba(138, 180, 248, 0.2);
+}
+
+.select-field option {
+  background: #1c1c1e;
+  color: #e4e4e4;
+  padding: 12px;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.select-field option:checked {
+  background: linear-gradient(#8ab4f8, #8ab4f8);
+  background-color: #8ab4f8 !important;
+  color: white;
+  font-weight: 600;
 }
 
 .btn-large {
