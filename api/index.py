@@ -47,6 +47,16 @@ async def test():
 async def youtube_info():
     return {"message": "YouTube info endpoint"}
 
+# Adicionar rotas reais
+try:
+    from routes.youtube import router as youtube_router
+    from routes.instagram import router as instagram_router
+
+    app.include_router(youtube_router, prefix="/api/youtube", tags=["youtube"])
+    app.include_router(instagram_router, prefix="/api/instagram", tags=["instagram"])
+except Exception as e:
+    print(f"Erro ao importar rotas: {e}")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
