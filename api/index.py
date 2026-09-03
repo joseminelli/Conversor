@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 # Importar rotas
 from routes.youtube import router as youtube_router
 from routes.instagram import router as instagram_router
-from routes.tiktok import router as tiktok_router
 
 load_dotenv()
 
@@ -29,7 +28,6 @@ app.add_middleware(
 # Rotas
 app.include_router(youtube_router, prefix="/api/youtube", tags=["youtube"])
 app.include_router(instagram_router, prefix="/api/instagram", tags=["instagram"])
-app.include_router(tiktok_router, prefix="/api/tiktok", tags=["tiktok"])
 
 @app.get("/api/health")
 async def health():
@@ -45,7 +43,6 @@ async def root():
         "endpoints": {
             "youtube": "/api/youtube/info",
             "instagram": "/api/instagram/info",
-            "tiktok": "/api/tiktok/info",
             "health": "/api/health"
         }
     }

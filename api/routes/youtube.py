@@ -79,41 +79,53 @@ async def download(request: DownloadRequest) -> dict:
 
         if request.format_type == "audio":
             ydl_opts.update({
-                'format': 'bestaudio/best',
-                'postprocessors': [{
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': 'mp3',
-                    'preferredquality': '192',
-                }],
+                'format': 'bestaudio',
+                'quiet': False,
+                'no_warnings': False,
             })
         else:
-            # Para vídeo
+            # Para vídeo - usar formatos mais simples e confiáveis
             quality_map = {
-                'best': 'best',
-                '1080p': 'best[height<=1080]',
-                '720p': 'best[height<=720]',
-                '480p': 'best[height<=480]',
-                '360p': 'best[height<=360]'
+                'best': 'best[ext=mp4]',
+                '1080p': 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]',
+                '720p': 'bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]',
+                '480p': 'bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]',
+                '360p': 'bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]'
             }
-            ydl_opts['format'] = quality_map.get(request.quality, 'best')
+            ydl_opts['format'] = quality_map.get(request.quality, 'best[ext=mp4]')
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(request.url, download=False)
 
-            # Obter URL do stream direto
-            formats = info.get('formats', [])
-            best_format = formats[-1] if formats else None
+            # Para áudio, retornar diretamente o URL
+            if request.format_type == "audio":
+                formats = info.get('formats', [])
+                audio_format = next((f for f in formats if f.get('acodec') != 'none' and f.get('vcodec') == 'none'), None)
 
-            if not best_format:
-                raise HTTPException(status_code=400, detail="Não foi possível obter formato")
+                if not audio_format:
+                    audio_format = formats[-1] if formats else None
 
+                if not audio_format:
+                    raise HTTPException(status_code=400, detail="Não foi possível obter formato de áudio")
+
+                return {
+                    "success": True,
+                    "title": info.get('title'),
+                    "format_type": "audio",
+                    "url": audio_format.get('url'),
+                    "ext": audio_format.get('ext', 'mp3'),
+                    "size": audio_format.get('filesize'),
+                    "message": "Use este URL para fazer download do arquivo"
+                }
+
+            # Para vídeo, retornar formato combinado
             return {
                 "success": True,
                 "title": info.get('title'),
-                "format_type": request.format_type,
-                "url": best_format.get('url'),
-                "ext": best_format.get('ext'),
-                "size": best_format.get('filesize'),
+                "format_type": "video",
+                "quality": request.quality,
+                "url": info.get('url'),
+                "ext": info.get('ext', 'mp4'),
                 "message": "Use este URL para fazer download do arquivo"
             }
 

@@ -131,6 +131,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { API_CONFIG } from '@/config/api'
 
 interface VideoInfo {
   title: string
@@ -183,7 +184,7 @@ export default defineComponent({
     async fetchVideoInfo() {
       this.isLoading = true
       try {
-        const response = await fetch('/api/youtube/info', {
+        const response = await fetch(API_CONFIG.endpoints.youtube.info, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -226,7 +227,7 @@ export default defineComponent({
       })
 
       try {
-        const response = await fetch('/api/youtube/download', {
+        const response = await fetch(API_CONFIG.endpoints.youtube.download, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
