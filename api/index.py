@@ -43,6 +43,10 @@ async def health():
 async def test():
     return {"test": "success"}
 
+@app.post("/api/youtube/info")
+async def youtube_info():
+    return {"message": "YouTube info endpoint"}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
