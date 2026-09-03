@@ -97,22 +97,6 @@ export const tools: ToolMeta[] = [
     route: '/pdf-compressor',
     category: 'documentos'
   },
-  {
-    id: 'youtube-downloader',
-    title: 'Baixador de YouTube',
-    description: 'Baixe vídeos e áudio do YouTube em diversos formatos e qualidades.',
-    icon: 'fa-brands fa-youtube',
-    route: '/youtube-downloader',
-    category: 'downloads'
-  },
-  {
-    id: 'instagram-downloader',
-    title: 'Baixador de Instagram',
-    description: 'Baixe fotos, vídeos e stories do Instagram com qualidade original.',
-    icon: 'fa-brands fa-instagram',
-    route: '/instagram-downloader',
-    category: 'downloads'
-  },
 ]
 
 export function getToolByRoute(route: string): ToolMeta | undefined {
