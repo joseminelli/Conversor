@@ -113,14 +113,6 @@ export const tools: ToolMeta[] = [
     route: '/instagram-downloader',
     category: 'downloads'
   },
-  {
-    id: 'tiktok-downloader',
-    title: 'Baixador de TikTok',
-    description: 'Baixe vídeos do TikTok sem marca d\'água em alta qualidade.',
-    icon: 'fa-brands fa-tiktok',
-    route: '/tiktok-downloader',
-    category: 'downloads'
-  }
 ]
 
 export function getToolByRoute(route: string): ToolMeta | undefined {

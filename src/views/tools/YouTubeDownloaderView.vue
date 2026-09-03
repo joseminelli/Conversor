@@ -161,7 +161,7 @@ export default defineComponent({
     }
   },
   methods: {
-    validateAndFetch() {
+    async validateAndFetch() {
       this.error = ''
       const url = this.videoUrl.trim()
 
@@ -178,44 +178,85 @@ export default defineComponent({
         return
       }
 
-      this.fetchVideoInfo()
+      await this.fetchVideoInfo()
     },
-    fetchVideoInfo() {
+    async fetchVideoInfo() {
       this.isLoading = true
-      // Simular busca de informações do vídeo
-      // Depois será implementado com API real
-      setTimeout(() => {
-        this.videoInfo = {
-          title: 'Como Aprender Programação do Zero',
-          channel: 'Dev Academy',
-          thumbnail:
-            'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-          duration: '15:32'
+      try {
+        const response = await fetch('/api/youtube/info', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            url: this.videoUrl,
+            format_type: this.downloadType
+          })
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          this.error = errorData.detail || 'Erro ao buscar vídeo'
+          this.isLoading = false
+          return
         }
+
+        const data = await response.json()
+        this.videoInfo = {
+          title: data.title,
+          channel: data.channel,
+          thumbnail: data.thumbnail,
+          duration: data.duration
+        }
+      } catch (err) {
+        this.error = `Erro ao conectar com servidor: ${err.message}`
+      } finally {
         this.isLoading = false
-      }, 1500)
+      }
     },
-    download() {
+    async download() {
       if (!this.videoInfo) {
         this.error = 'Nenhum vídeo carregado'
         return
       }
 
-      // Será implementado depois com a API real
       this.$message.loading({
-        content: 'Iniciando download...',
+        content: 'Processando download...',
         duration: 0
       })
 
-      setTimeout(() => {
+      try {
+        const response = await fetch('/api/youtube/download', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            url: this.videoUrl,
+            format_type: this.downloadType,
+            quality: this.downloadType === 'video' ? this.selectedQuality : this.selectedAudioFormat
+          })
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          this.$message.error(errorData.detail || 'Erro ao processar download')
+          return
+        }
+
+        const data = await response.json()
+
+        // Abrir o link de download em nova aba
+        if (data.url) {
+          window.open(data.url, '_blank')
+        }
+
         this.$message.success(
-          `Download iniciado! (${this.downloadType === 'video' ? 'Vídeo' : 'Áudio'} - ${
-            this.downloadType === 'video'
-              ? this.selectedQuality
-              : this.selectedAudioFormat
-          })`
+          `Download iniciado! (${this.downloadType === 'video' ? 'Vídeo' : 'Áudio'})`
         )
-      }, 2000)
+      } catch (err) {
+        this.$message.error(`Erro: ${err.message}`)
+      }
     },
     clearError() {
       this.error = ''

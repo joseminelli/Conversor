@@ -1,6 +1,6 @@
 # Conversor Universal - Backend API
 
-Backend em Python com FastAPI para download de conteúdo de YouTube, Instagram e TikTok.
+Backend em Python com FastAPI para download de conteúdo de YouTube e Instagram.
 
 ## Instalação Local
 
@@ -58,11 +58,6 @@ Documentação interativa: `http://localhost:8000/docs`
 - `POST /api/instagram/download` - Baixar conteúdo
 - `GET /api/instagram/stories/{username}` - Obter stories
 
-### TikTok
-- `POST /api/tiktok/info` - Obter informações do vídeo
-- `POST /api/tiktok/download` - Baixar vídeo/áudio
-- `GET /api/tiktok/video/{video_id}` - Obter vídeo por ID
-
 ---
 
 ## Deploy no Vercel
@@ -89,7 +84,6 @@ Documentação interativa: `http://localhost:8000/docs`
 |---------|--------|-------|
 | YouTube | ✅ Implementado | Usando yt-dlp |
 | Instagram | 🔄 Em desenvolvimento | Requer autenticação |
-| TikTok | 🔄 Em desenvolvimento | API limitada |
 
 ---
 
@@ -128,7 +122,6 @@ api/
 ├── routes/
 │   ├── youtube.py       # Endpoints do YouTube
 │   ├── instagram.py     # Endpoints do Instagram
-│   └── tiktok.py        # Endpoints do TikTok
 ├── requirements.txt     # Dependências Python
 ├── .env.example         # Exemplo de variáveis
 └── README.md           # Este arquivo
