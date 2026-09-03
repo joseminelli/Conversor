@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const ytdl = require('ytdl-core');
+const { execSync } = require('child_process');
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.get('/test', (req, res) => {
   res.json({ test: 'ok' });
 });
 
-app.post('/youtube/info', async (req, res) => {
+app.post('/youtube/info', (req, res) => {
   try {
     const { url } = req.body;
 
@@ -27,22 +27,23 @@ app.post('/youtube/info', async (req, res) => {
       return res.status(400).json({ error: 'URL is required' });
     }
 
-    const info = await ytdl.getInfo(url);
-    const videoDetails = info.videoDetails;
+    const cmd = `python -m yt_dlp -j --no-warnings "${url}"`;
+    const output = execSync(cmd, { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 });
+    const info = JSON.parse(output);
 
     res.json({
-      title: videoDetails.title,
-      channel: videoDetails.author.name,
-      thumbnail: videoDetails.thumbnail.thumbnails[videoDetails.thumbnail.thumbnails.length - 1].url,
-      duration: videoDetails.lengthSeconds
+      title: info.title,
+      channel: info.uploader,
+      thumbnail: info.thumbnail,
+      duration: String(Math.floor(info.duration / 60)) + ':' + String(info.duration % 60).padStart(2, '0')
     });
   } catch (error) {
-    console.error('Error fetching video info:', error);
+    console.error('Error fetching video info:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
 
-app.post('/youtube/audio-tracks', async (req, res) => {
+app.post('/youtube/audio-tracks', (req, res) => {
   try {
     const { url } = req.body;
 
@@ -50,16 +51,18 @@ app.post('/youtube/audio-tracks', async (req, res) => {
       return res.status(400).json({ error: 'URL is required' });
     }
 
-    const info = await ytdl.getInfo(url);
-    const formats = info.formats;
+    const cmd = `python -m yt_dlp -j --no-warnings "${url}"`;
+    const output = execSync(cmd, { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 });
+    const info = JSON.parse(output);
+    const formats = info.formats || [];
 
     const audioFormats = formats
-      .filter(f => f.mimeType && f.mimeType.includes('audio'))
+      .filter(f => f.vcodec === 'none' && f.acodec && f.acodec !== 'none')
       .map(f => ({
-        format_id: f.itag,
-        language: 'Portuguese (BR)',
-        codec: f.mimeType.split(';')[0].replace('audio/', ''),
-        bitrate: f.bitrate ? Math.round(f.bitrate / 1000) : 128,
+        format_id: f.format_id,
+        language: f.language || 'Portuguese (BR)',
+        codec: f.acodec,
+        bitrate: f.abr || 128,
         is_original: true
       }))
       .filter((item, index, self) => index === self.findIndex(t => t.format_id === item.format_id));
@@ -70,7 +73,7 @@ app.post('/youtube/audio-tracks', async (req, res) => {
       ]
     });
   } catch (error) {
-    console.error('Error fetching audio tracks:', error);
+    console.error('Error fetching audio tracks:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
