@@ -27,8 +27,13 @@ app.post('/youtube/info', (req, res) => {
       return res.status(400).json({ error: 'URL is required' });
     }
 
-    const cmd = `python -m yt_dlp -j --no-warnings "${url}"`;
+    console.log('Fetching info for:', url);
+    const cmd = `python -m yt_dlp -j --extractor-args youtube:player_client=web "${url}"`;
+    console.log('Running command:', cmd);
+
     const output = execSync(cmd, { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 });
+    console.log('Output received, parsing...');
+
     const info = JSON.parse(output);
 
     res.json({
@@ -38,7 +43,8 @@ app.post('/youtube/info', (req, res) => {
       duration: String(Math.floor(info.duration / 60)) + ':' + String(info.duration % 60).padStart(2, '0')
     });
   } catch (error) {
-    console.error('Error fetching video info:', error.message);
+    console.error('ERROR:', error.message);
+    console.error('Full error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -51,7 +57,7 @@ app.post('/youtube/audio-tracks', (req, res) => {
       return res.status(400).json({ error: 'URL is required' });
     }
 
-    const cmd = `python -m yt_dlp -j --no-warnings "${url}"`;
+    const cmd = `python -m yt_dlp -j --extractor-args youtube:player_client=web "${url}"`;
     const output = execSync(cmd, { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 });
     const info = JSON.parse(output);
     const formats = info.formats || [];
