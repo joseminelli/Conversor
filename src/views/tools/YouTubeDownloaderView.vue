@@ -81,17 +81,14 @@
             </div>
           </div>
 
-          <div class="format-options" v-if="downloadType === 'audio'">
-            <label>Formato de áudio:</label>
-            <div class="format-buttons">
-              <button
-                v-for="format in audioFormats"
-                :key="format"
-                @click="selectedAudioFormat = format"
-                :class="['format-btn', { active: selectedAudioFormat === format }]"
-              >
-                {{ format.toUpperCase() }}
-              </button>
+          <div class="format-options" v-if="downloadType === 'video' && audioTracks.length > 0">
+            <label>Idioma do áudio:</label>
+            <div class="audio-select">
+              <select v-model="selectedAudioTrack" class="select-field">
+                <option v-for="track in audioTracks" :key="track.format_id" :value="track.format_id">
+                  {{ track.language }} ({{ track.codec }})
+                </option>
+              </select>
             </div>
           </div>
 
@@ -151,6 +148,8 @@ export default defineComponent({
       downloadType: 'video' as 'video' | 'audio',
       selectedQuality: 'best',
       selectedAudioFormat: 'mp3',
+      audioTracks: [] as any[],
+      selectedAudioTrack: '',
       videoQualities: [
         { value: 'best', label: 'Melhor', size: 'Variável' },
         { value: '1080p', label: '1080p', size: '~100MB' },
@@ -209,10 +208,43 @@ export default defineComponent({
           thumbnail: data.thumbnail,
           duration: data.duration
         }
+
+        // Carregar áudios disponíveis
+        await this.loadAudioTracks()
       } catch (err) {
         this.error = `Erro ao conectar com servidor: ${err.message}`
       } finally {
         this.isLoading = false
+      }
+    },
+    async loadAudioTracks() {
+      try {
+        // Chamar endpoint de audio tracks
+        const tracksResponse = await fetch(`${API_CONFIG.baseUrl}/api/youtube/audio-tracks`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            url: this.videoUrl,
+            format_type: 'audio'
+          })
+        })
+
+        if (tracksResponse.ok) {
+          const tracksData = await tracksResponse.json()
+          let tracks = tracksData.audio_tracks || []
+
+          // Priorizar português (BR)
+          const brTrack = tracks.find(t => t.language.toLowerCase().includes('portuguese') || t.language.toLowerCase().includes('por'))
+          if (brTrack) {
+            this.selectedAudioTrack = brTrack.format_id
+          }
+
+          this.audioTracks = tracks
+        }
+      } catch (err) {
+        console.error('Erro ao carregar áudios:', err)
       }
     },
     async download() {
@@ -235,7 +267,8 @@ export default defineComponent({
           body: JSON.stringify({
             url: this.videoUrl,
             format_type: this.downloadType,
-            quality: this.downloadType === 'video' ? this.selectedQuality : this.selectedAudioFormat
+            quality: this.downloadType === 'video' ? this.selectedQuality : this.selectedAudioFormat,
+            audio_track_id: this.selectedAudioTrack || null
           })
         })
 
