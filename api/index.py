@@ -33,6 +33,18 @@ def youtube_info(request: YouTubeRequest):
         "duration": "10:30"
     }
 
+@app.post("/youtube/audio-tracks")
+def youtube_audio_tracks(request: YouTubeRequest):
+    return {
+        "audio_tracks": [
+            {"format_id": "251", "language": "Portuguese (BR)", "codec": "opus", "bitrate": 128, "is_original": True}
+        ]
+    }
+
+@app.post("/youtube/stream")
+def youtube_stream(request: YouTubeRequest):
+    return {"message": "stream"}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -209,7 +209,7 @@ export default defineComponent({
     async loadAudioTracks() {
       try {
         // Chamar endpoint de audio tracks
-        const tracksResponse = await fetch(`${API_CONFIG.baseUrl}/api/youtube/audio-tracks`, {
+        const tracksResponse = await fetch(`${API_CONFIG.baseUrl}/youtube/audio-tracks`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
