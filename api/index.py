@@ -17,7 +17,16 @@ app = FastAPI(
 )
 
 # CORS - permitir requisições do frontend
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "").split(",") if os.getenv("ALLOWED_ORIGINS") else []
+# Adicionar origens padrão
+default_origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://joseminelli.github.io",
+    "https://localhost"
+]
+allowed_origins = [origin.strip() for origin in allowed_origins if origin.strip()] + default_origins
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
