@@ -7,6 +7,7 @@ export const API_CONFIG = {
     youtube: {
       info: `${API_BASE_URL}/api/youtube/info`,
       download: `${API_BASE_URL}/api/youtube/download`,
+      stream: `${API_BASE_URL}/api/youtube/stream`,
       formats: `${API_BASE_URL}/api/youtube/formats`
     },
     instagram: {

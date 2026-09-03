@@ -221,13 +221,13 @@ export default defineComponent({
         return
       }
 
-      this.$message.loading({
-        content: 'Processando download...',
+      const loadingMsg = this.$message.loading({
+        content: 'Baixando arquivo (isso pode levar alguns minutos)...',
         duration: 0
       })
 
       try {
-        const response = await fetch(API_CONFIG.endpoints.youtube.download, {
+        const response = await fetch(API_CONFIG.endpoints.youtube.stream, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -241,21 +241,39 @@ export default defineComponent({
 
         if (!response.ok) {
           const errorData = await response.json()
+          loadingMsg.close()
           this.$message.error(errorData.detail || 'Erro ao processar download')
           return
         }
 
-        const data = await response.json()
+        // Gerar download do arquivo
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
 
-        // Abrir o link de download em nova aba
-        if (data.url) {
-          window.open(data.url, '_blank')
+        // Extrair nome do arquivo do header Content-Disposition se disponível
+        const contentDisposition = response.headers.get('content-disposition')
+        let filename = `download.${this.downloadType === 'audio' ? 'mp3' : 'mp4'}`
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/)
+          if (filenameMatch) {
+            filename = filenameMatch[1]
+          }
         }
 
+        link.setAttribute('download', filename)
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+        window.URL.revokeObjectURL(url)
+
+        loadingMsg.close()
         this.$message.success(
-          `Download iniciado! (${this.downloadType === 'video' ? 'Vídeo' : 'Áudio'})`
+          `Download concluído! (${this.downloadType === 'video' ? 'Vídeo' : 'Áudio'})`
         )
       } catch (err) {
+        loadingMsg.close()
         this.$message.error(`Erro: ${err.message}`)
       }
     },
