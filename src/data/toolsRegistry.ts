@@ -96,6 +96,30 @@ export const tools: ToolMeta[] = [
     icon: 'fa-file-zipper',
     route: '/pdf-compressor',
     category: 'documentos'
+  },
+  {
+    id: 'youtube-downloader',
+    title: 'Baixador de YouTube',
+    description: 'Baixe vídeos e áudio do YouTube em diversos formatos e qualidades.',
+    icon: 'fa-brands fa-youtube',
+    route: '/youtube-downloader',
+    category: 'downloads'
+  },
+  {
+    id: 'instagram-downloader',
+    title: 'Baixador de Instagram',
+    description: 'Baixe fotos, vídeos e stories do Instagram com qualidade original.',
+    icon: 'fa-brands fa-instagram',
+    route: '/instagram-downloader',
+    category: 'downloads'
+  },
+  {
+    id: 'tiktok-downloader',
+    title: 'Baixador de TikTok',
+    description: 'Baixe vídeos do TikTok sem marca d\'água em alta qualidade.',
+    icon: 'fa-brands fa-tiktok',
+    route: '/tiktok-downloader',
+    category: 'downloads'
   }
 ]
 

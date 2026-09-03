@@ -142,6 +142,27 @@
           />
         </div>
       </section>
+
+      <!-- Download Tools -->
+      <section class="category-section" ref="downloadSection">
+        <div class="category-header">
+          <div class="category-icon">
+            <i class="fa-solid fa-download"></i>
+          </div>
+          <div>
+            <h2>Downloads</h2>
+            <p>Baixe conteúdo de redes sociais e plataformas de vídeo</p>
+          </div>
+        </div>
+        <div class="tool-grid">
+          <HubToolCard
+            v-for="tool in downloadTools"
+            :key="tool.id"
+            :tool="tool"
+            class="tool-card-item"
+          />
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -177,6 +198,9 @@ export default defineComponent({
     },
     documentTools() {
       return getToolsByCategory('documentos')
+    },
+    downloadTools() {
+      return getToolsByCategory('downloads')
     }
   },
   mounted() {

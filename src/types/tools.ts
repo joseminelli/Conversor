@@ -1,4 +1,4 @@
-export type ToolCategory = 'imagens' | 'áudio' | 'utilitários' | 'documentos'
+export type ToolCategory = 'imagens' | 'áudio' | 'utilitários' | 'documentos' | 'downloads'
 
 export interface ToolMeta {
   id: string
