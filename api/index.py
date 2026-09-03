@@ -1,22 +1,35 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
 
 app = FastAPI(title="Conversor API", version="1.0.0")
 
-# CORS ANTES de tudo
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Middleware CORS customizado
+class CORSMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Responder OPTIONS diretamente
+        if request.method == "OPTIONS":
+            return Response(
+                status_code=200,
+                headers={
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, DELETE",
+                    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                }
+            )
+        
+        # Processar requisição normal
+        response = await call_next(request)
+        
+        # Adicionar headers CORS em TODA resposta
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS, PUT, DELETE"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        
+        return response
 
-# Handler para OPTIONS
-@app.options("/{full_path:path}")
-async def preflight_handler(full_path: str):
-    return Response(status_code=200)
+app.add_middleware(CORSMiddleware)
 
 @app.get("/")
 async def root():
@@ -26,7 +39,10 @@ async def root():
 async def health():
     return {"status": "ok"}
 
-# Test endpoint
 @app.get("/test")
 async def test():
     return {"test": "success"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
