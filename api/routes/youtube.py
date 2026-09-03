@@ -186,7 +186,21 @@ async def stream_download(request: DownloadRequest):
             video_formats.sort(reverse=True)
 
             best_combined = combined_formats[0][2] if combined_formats else None
-            best_video = video_formats[0][2] if video_formats else None
+            # Filtrar vídeos pela qualidade escolhida
+            best_video = None
+            if request.quality != 'best':
+                # Extrair altura da qualidade (ex: '720p' -> 720)
+                try:
+                    target_height = int(request.quality.replace('p', ''))
+                    # Procurar vídeo com altura máxima <= target_height
+                    filtered_videos = [v for v in video_formats if v[0] <= target_height]
+                    if filtered_videos:
+                        best_video = filtered_videos[0][2]  # Usar o primeiro (já ordenado decrescente)
+                except:
+                    best_video = video_formats[0][2] if video_formats else None
+            else:
+                best_video = video_formats[0][2] if video_formats else None
+
             best_audio = audio_formats[0][2] if audio_formats else None
 
             # Se usuário especificou um áudio, usar esse
