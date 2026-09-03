@@ -1,8 +1,0 @@
-{
-  "buildCommand": "pip install -r api/requirements.txt",
-  "functions": {
-    "api/index.py": {
-      "runtime": "python3.12"
-    }
-  }
-}
