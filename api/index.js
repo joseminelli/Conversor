@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { execSync } = require('child_process');
+const Instagrapi = require('instafetch');
 
 const app = express();
 
@@ -99,16 +100,52 @@ app.post('/youtube/stream', (req, res) => {
   }
 });
 
-app.post('/instagram/info', (req, res) => {
-  res.json({
-    title: 'Post do Instagram',
-    author: 'usuario',
-    thumbnail: 'https://via.placeholder.com/400x400'
-  });
+app.post('/instagram/info', async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) return res.status(400).json({ error: 'URL required' });
+
+    const shortcode = url.split('/p/')[1]?.split('/')[0] || url.split('/reel/')[1]?.split('/')[0];
+    if (!shortcode) return res.status(400).json({ error: 'Invalid Instagram URL' });
+
+    const data = await Instagrapi.getPostInfo(shortcode);
+
+    res.json({
+      title: data.caption || 'Post do Instagram',
+      author: data.owner?.username || 'unknown',
+      thumbnail: data.display_url || data.thumbnail_url || 'https://via.placeholder.com/400x400',
+      media_type: data.is_video ? 'video' : 'photo',
+      media_url: data.video_url || data.display_url
+    });
+  } catch (error) {
+    console.error('Instagram info error:', error.message);
+    res.status(500).json({ error: error.message });
+  }
 });
 
-app.post('/instagram/download', (req, res) => {
-  res.json({ message: 'Em desenvolvimento' });
+app.post('/instagram/download', async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) return res.status(400).json({ error: 'URL required' });
+
+    const shortcode = url.split('/p/')[1]?.split('/')[0] || url.split('/reel/')[1]?.split('/')[0];
+    if (!shortcode) return res.status(400).json({ error: 'Invalid Instagram URL' });
+
+    const data = await Instagrapi.getPostInfo(shortcode);
+    const mediaUrl = data.video_url || data.display_url;
+
+    if (!mediaUrl) return res.status(400).json({ error: 'No media found' });
+
+    const response = await fetch(mediaUrl);
+    const buffer = await response.buffer();
+
+    res.set('Content-Type', response.headers.get('content-type'));
+    res.set('Content-Disposition', `attachment; filename="instagram.${data.is_video ? 'mp4' : 'jpg'}"`);
+    res.send(buffer);
+  } catch (error) {
+    console.error('Instagram download error:', error.message);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
