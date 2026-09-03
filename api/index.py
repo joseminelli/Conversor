@@ -1,36 +1,28 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import Response
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="Conversor API", version="1.0.0")
+app = FastAPI()
 
-class CORSMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        if request.method == "OPTIONS":
-            return Response(
-                status_code=200,
-                headers={
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                    "Access-Control-Allow-Headers": "Content-Type",
-                }
-            )
-        
-        response = await call_next(request)
-        response.headers["Access-Control-Allow-Origin"] = "*"
-        return response
-
-app.add_middleware(CORSMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
-async def root():
-    return {"message": "API ok"}
-
-@app.post("/youtube/info")
-async def youtube_info(url: str = None):
-    return {"url": url, "message": "ok"}
+def root():
+    return {"status": "ok"}
 
 @app.get("/test")
-async def test():
+def test():
     return {"test": "ok"}
+
+@app.post("/youtube/info")
+def youtube_info(url: str = ""):
+    return {"url": url}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
