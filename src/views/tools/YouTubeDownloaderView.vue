@@ -115,7 +115,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { getInfo } from '@distube/ytdl'
+import { API_CONFIG } from '@/config/api'
 
 interface VideoInfo {
   title: string
@@ -171,63 +171,79 @@ export default defineComponent({
     async fetchVideoInfo() {
       this.isLoading = true
       try {
-        const info = await getInfo(this.videoUrl)
-        const videoDetails = info.videoDetails
+        const response = await fetch(API_CONFIG.endpoints.youtube.info, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            url: this.videoUrl,
+            format_type: this.downloadType
+          })
+        })
 
-        const durationSec = parseInt(videoDetails.lengthSeconds)
-        const minutes = Math.floor(durationSec / 60)
-        const seconds = durationSec % 60
+        if (!response.ok) {
+          const errorData = await response.json()
+          this.error = errorData.detail || 'Erro ao buscar vídeo'
+          this.isLoading = false
+          return
+        }
 
+        const data = await response.json()
         this.videoInfo = {
-          title: videoDetails.title,
-          channel: videoDetails.author.name,
-          thumbnail: videoDetails.thumbnail.thumbnails[0].url,
-          duration: `${minutes}:${seconds.toString().padStart(2, '0')}`
+          title: data.title,
+          channel: data.channel,
+          thumbnail: data.thumbnail,
+          duration: data.duration
         }
 
         // Carregar áudios disponíveis
-        await this.loadAudioTracks(info)
+        await this.loadAudioTracks()
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err)
-        this.error = `Erro ao buscar vídeo: ${message}`
+        this.error = `Erro ao conectar com servidor: ${message}`
       } finally {
         this.isLoading = false
       }
     },
-    async loadAudioTracks(info: any) {
+    async loadAudioTracks() {
       try {
-        const formats = info.formats || []
-        const audioFormats: any[] = []
-        const audioByLanguage: { [key: string]: any } = {}
+        // Chamar endpoint de audio tracks
+        const tracksResponse = await fetch(`${API_CONFIG.baseUrl}/youtube/audio-tracks`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            url: this.videoUrl,
+            format_type: 'audio'
+          })
+        })
 
-        // Filtrar apenas formatos de áudio
-        for (const fmt of formats) {
-          if (fmt.vcodec === 'none' && fmt.acodec && fmt.acodec !== 'none') {
-            const language = fmt.language || 'Original'
-            const bitrate = fmt.abr || 128
+        if (tracksResponse.ok) {
+          const tracksData = await tracksResponse.json()
+          const tracks = tracksData.audio_tracks || []
 
-            // Manter apenas melhor qualidade por idioma
-            if (!audioByLanguage[language] || bitrate > (audioByLanguage[language].bitrate || 0)) {
-              audioByLanguage[language] = {
-                format_id: fmt.format_id,
-                language: language,
-                codec: fmt.acodec,
-                bitrate: bitrate,
-                is_original: language === 'Original'
-              }
+          // Já vem agrupado por idioma e ordenado por qualidade do backend
+          this.audioTracks = tracks
+
+          // Selecionar por padrão: original > português > melhor qualidade
+          let defaultTrack: any = tracks[0]
+
+          // Procurar áudio original
+          const originalTrack = tracks.find((t: any) => t.is_original)
+          if (originalTrack) {
+            defaultTrack = originalTrack
+          } else {
+            // Se não encontrou original, usar português se disponível
+            const ptTrack = tracks.find((t: any) => t.language.includes('pt'))
+            if (ptTrack) {
+              defaultTrack = ptTrack
             }
           }
-        }
 
-        this.audioTracks = Object.values(audioByLanguage)
-
-        // Selecionar padrão: original > português
-        let defaultTrack = this.audioTracks[0]
-        const originalTrack = this.audioTracks.find(t => t.is_original)
-        if (originalTrack) {
-          defaultTrack = originalTrack
+          this.selectedAudioTrack = defaultTrack.format_id
         }
-        this.selectedAudioTrack = defaultTrack?.format_id || ''
       } catch (err) {
         console.error('Erro ao carregar áudios:', err)
       }
@@ -239,68 +255,54 @@ export default defineComponent({
       }
 
       this.isDownloading = true
-      this.error = ''
 
       try {
-        const info = await getInfo(this.videoUrl)
-        const formats = info.formats || []
+        const response = await fetch(API_CONFIG.endpoints.youtube.stream, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            url: this.videoUrl,
+            format_type: this.downloadType,
+            quality: this.downloadType === 'video' ? this.selectedQuality : this.selectedAudioFormat,
+            audio_track_id: this.selectedAudioTrack || null
+          })
+        })
 
-        let selectedFormat: any = null
+        if (!response.ok) {
+          const errorData = await response.json()
+          this.error = errorData.detail || 'Erro ao processar download'
+          return
+        }
 
-        if (this.downloadType === 'audio') {
-          // Filtrar apenas áudio com melhor qualidade
-          const audioFormats = formats.filter((f: any) => f.vcodec === 'none' && f.acodec && f.acodec !== 'none')
+        // Gerar download do arquivo
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
 
-          if (this.selectedAudioTrack) {
-            selectedFormat = audioFormats.find((f: any) => f.format_id === this.selectedAudioTrack)
-          } else {
-            // Pegar melhor áudio
-            selectedFormat = audioFormats.sort((a: any, b: any) => (b.abr || 0) - (a.abr || 0))[0]
-          }
-
-          if (!selectedFormat) {
-            this.error = 'Nenhum formato de áudio disponível'
-            return
-          }
-        } else {
-          // Modo vídeo
-          const videoFormats = formats.filter((f: any) => f.vcodec && f.vcodec !== 'none')
-
-          // Filtrar por qualidade selecionada
-          if (this.selectedQuality !== 'best') {
-            const targetHeight = parseInt(this.selectedQuality)
-            const filtered = videoFormats.filter((f: any) => (f.height || 0) <= targetHeight)
-            selectedFormat = filtered.sort((a: any, b: any) => (b.height || 0) - (a.height || 0))[0]
-          } else {
-            selectedFormat = videoFormats.sort((a: any, b: any) => (b.height || 0) - (a.height || 0))[0]
-          }
-
-          if (!selectedFormat) {
-            this.error = 'Nenhum formato de vídeo disponível'
-            return
+        // Extrair nome do arquivo do header Content-Disposition se disponível
+        const contentDisposition = response.headers.get('content-disposition')
+        let filename = `download.${this.downloadType === 'audio' ? 'mp3' : 'mp4'}`
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/)
+          if (filenameMatch) {
+            filename = filenameMatch[1]
           }
         }
 
-        // Criar um link e trigger download
-        const downloadUrl = selectedFormat.url
-        const link = document.createElement('a')
-        link.href = downloadUrl
-        link.target = '_blank'
-
-        // Nome padrão
-        const ext = this.downloadType === 'audio' ? 'mp3' : 'mp4'
-        link.download = `${this.videoInfo.title}.${ext}`
-
+        link.setAttribute('download', filename)
         document.body.appendChild(link)
         link.click()
         link.remove()
+        window.URL.revokeObjectURL(url)
 
         this.$message?.success(
-          `Download iniciado! (${this.downloadType === 'video' ? 'Vídeo' : 'Áudio'})`
+          `Download concluído! (${this.downloadType === 'video' ? 'Vídeo' : 'Áudio'})`
         )
       } catch (err) {
-        const message = err instanceof Error ? err.message : String(err)
-        this.error = `Erro ao iniciar download: ${message}`
+        this.error = `Erro: ${err instanceof Error ? err.message : String(err)}`
       } finally {
         this.isDownloading = false
       }
