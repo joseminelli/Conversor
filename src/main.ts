@@ -23,7 +23,6 @@ import TextConverterView from './views/tools/TextConverterView.vue'
 import ImageBatchResizerView from './views/tools/ImageBatchResizerView.vue'
 import DocumentConverterView from './views/tools/DocumentConverterView.vue'
 import PdfCompressorView from './views/tools/PdfCompressorView.vue'
-import YouTubeDownloaderView from './views/tools/YouTubeDownloaderView.vue'
 import InstagramDownloaderView from './views/tools/InstagramDownloaderView.vue'
 
 const app = createApp(App)
@@ -100,11 +99,6 @@ const router = createRouter({
       path: '/pdf-compressor',
       name: 'PdfCompressor',
       component: PdfCompressorView
-    },
-    {
-      path: '/youtube-downloader',
-      name: 'YouTubeDownloader',
-      component: YouTubeDownloaderView
     },
     {
       path: '/instagram-downloader',
