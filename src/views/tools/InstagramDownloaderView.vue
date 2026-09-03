@@ -210,10 +210,7 @@ export default defineComponent({
       }
 
       // Será implementado depois com a API real
-      this.$message.loading({
-        content: 'Iniciando download...',
-        duration: 0
-      })
+      this.$message.loading('Iniciando download...')
 
       setTimeout(() => {
         this.$message.success(
@@ -410,7 +407,6 @@ export default defineComponent({
   font-size: 12px;
   color: var(--text-secondary);
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
