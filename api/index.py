@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
+from pydantic import BaseModel
 
 app = FastAPI(title="Conversor API", version="1.0.0")
 
@@ -44,15 +45,15 @@ async def test():
     return {"test": "success"}
 
 @app.post("/api/youtube/info")
-async def youtube_info():
-    return {"message": "YouTube info endpoint"}
+async def youtube_info(url: str = None):
+    """Get YouTube video info"""
+    if not url:
+        raise HTTPException(status_code=400, detail="URL é obrigatória")
 
-# Adicionar rotas reais
-from routes.youtube import router as youtube_router
-from routes.instagram import router as instagram_router
+    if not ("youtube.com" in url or "youtu.be" in url):
+        raise HTTPException(status_code=400, detail="URL não é do YouTube")
 
-app.include_router(youtube_router, prefix="/api/youtube", tags=["youtube"])
-app.include_router(instagram_router, prefix="/api/instagram", tags=["instagram"])
+    return {"message": "YouTube info endpoint", "url": url}
 
 if __name__ == "__main__":
     import uvicorn
