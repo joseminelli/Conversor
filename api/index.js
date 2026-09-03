@@ -99,6 +99,18 @@ app.post('/youtube/stream', (req, res) => {
   }
 });
 
+app.post('/instagram/info', (req, res) => {
+  res.json({
+    title: 'Post do Instagram',
+    author: 'usuario',
+    thumbnail: 'https://via.placeholder.com/400x400'
+  });
+});
+
+app.post('/instagram/download', (req, res) => {
+  res.json({ message: 'Em desenvolvimento' });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
