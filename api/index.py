@@ -16,6 +16,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.options("/{full_path:path}")
+def handle_options(full_path: str):
+    return {"message": "ok"}
+
 @app.get("/")
 def root():
     return {"status": "ok"}
