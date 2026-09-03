@@ -73,7 +73,7 @@
             <div class="audio-select">
               <select v-model="selectedAudioTrack" class="select-field">
                 <option v-for="track in audioTracks" :key="track.format_id" :value="track.format_id">
-                  {{ track.language }} ({{ track.codec }})
+                  {{ track.language }} {{ track.is_original ? '(Original)' : '' }} - {{ track.codec || 'N/A' }}
                 </option>
               </select>
             </div>
@@ -222,38 +222,27 @@ export default defineComponent({
 
         if (tracksResponse.ok) {
           const tracksData = await tracksResponse.json()
-          let tracks = tracksData.audio_tracks || []
+          const tracks = tracksData.audio_tracks || []
 
-          // Agrupar por idioma e manter apenas o melhor áudio por idioma
-          const tracksByLanguage = new Map<string, any>()
+          // Já vem agrupado por idioma e ordenado por qualidade do backend
+          this.audioTracks = tracks
 
-          for (const track of tracks) {
-            const lang = track.language
-            if (!tracksByLanguage.has(lang)) {
-              tracksByLanguage.set(lang, track)
-            } else {
-              // Comparar bitrate/qualidade e manter o melhor
-              const existing = tracksByLanguage.get(lang)
-              const newAbr = track.abr || 0
-              const existingAbr = existing.abr || 0
-              if (newAbr > existingAbr) {
-                tracksByLanguage.set(lang, track)
-              }
+          // Selecionar por padrão: original > português > melhor qualidade
+          let defaultTrack: any = tracks[0]
+
+          // Procurar áudio original
+          const originalTrack = tracks.find((t: any) => t.is_original)
+          if (originalTrack) {
+            defaultTrack = originalTrack
+          } else {
+            // Se não encontrou original, usar português se disponível
+            const ptTrack = tracks.find((t: any) => t.language.includes('pt'))
+            if (ptTrack) {
+              defaultTrack = ptTrack
             }
           }
 
-          // Converter para array e ordenar
-          const uniqueTracks = Array.from(tracksByLanguage.values())
-
-          // Priorizar português (BR)
-          const brTrack = uniqueTracks.find(t => t.language.toLowerCase().includes('portuguese') || t.language.toLowerCase().includes('por'))
-          if (brTrack) {
-            this.selectedAudioTrack = brTrack.format_id
-          } else if (uniqueTracks.length > 0) {
-            this.selectedAudioTrack = uniqueTracks[0].format_id
-          }
-
-          this.audioTracks = uniqueTracks
+          this.selectedAudioTrack = defaultTrack.format_id
         }
       } catch (err) {
         console.error('Erro ao carregar áudios:', err)

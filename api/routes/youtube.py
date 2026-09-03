@@ -332,7 +332,7 @@ async def stream_download(request: DownloadRequest):
 
 @router.post("/audio-tracks")
 async def get_audio_tracks(request: DownloadRequest) -> dict:
-    """Listar faixas de áudio disponíveis com idiomas"""
+    """Listar faixas de áudio disponíveis com idiomas - melhor qualidade por idioma"""
     try:
         ydl_opts = {
             'quiet': True,
@@ -344,22 +344,57 @@ async def get_audio_tracks(request: DownloadRequest) -> dict:
             info = ydl.extract_info(request.url, download=False)
             formats = info.get('formats', [])
 
-            # Extrair áudios disponíveis
-            audio_tracks = []
+            # Tentar detectar idioma original do vídeo
+            original_language = info.get('language') or None
+            print(f"DEBUG: Idioma detectado do vídeo: {original_language}")
+
+            # Extrair MELHOR áudio de CADA idioma
+            audio_by_language = {}
             for fmt in formats:
                 if fmt.get('vcodec') == 'none' and fmt.get('acodec') != 'none':
                     language = fmt.get('language') or 'Desconhecido'
                     abr = fmt.get('abr') or 0
-                    audio_tracks.append({
-                        'format_id': fmt.get('format_id'),
-                        'language': language,
-                        'codec': fmt.get('acodec'),
-                        'bitrate': abr
-                    })
+
+                    # Se este idioma não existe ou tem melhor qualidade, usar este
+                    if language not in audio_by_language:
+                        audio_by_language[language] = {
+                            'format_id': fmt.get('format_id'),
+                            'language': language,
+                            'codec': fmt.get('acodec'),
+                            'bitrate': abr,
+                            'is_original': False
+                        }
+                    else:
+                        # Manter o de melhor qualidade
+                        if abr > (audio_by_language[language].get('bitrate') or 0):
+                            audio_by_language[language] = {
+                                'format_id': fmt.get('format_id'),
+                                'language': language,
+                                'codec': fmt.get('acodec'),
+                                'bitrate': abr,
+                                'is_original': False
+                            }
+
+            # Converter para array e ordenar por qualidade
+            audio_tracks = list(audio_by_language.values())
+            audio_tracks.sort(key=lambda x: x['bitrate'], reverse=True)
+
+            # Marcar áudio original (pt-BR por padrão se vídeo for português, senão pt-BR mesmo)
+            for track in audio_tracks:
+                # Se o vídeo tem idioma detectado e match, marcar como original
+                if original_language and track['language'] == original_language:
+                    track['is_original'] = True
+                # Se for pt-BR, marcar como possível original (para português)
+                elif track['language'] in ['pt-BR', 'pt', 'pt-PT']:
+                    track['is_original'] = True
+                # Se for en-US e nenhum outro foi marcado, pode ser original
+                elif track['language'] in ['en', 'en-US'] and not any(t['is_original'] for t in audio_tracks):
+                    track['is_original'] = True
 
             return {
                 "title": info.get('title'),
                 "audio_tracks": audio_tracks,
+                "original_language": original_language,
                 "total": len(audio_tracks)
             }
 
