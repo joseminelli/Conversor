@@ -5,14 +5,14 @@ export const API_CONFIG = {
   baseUrl: API_BASE_URL,
   endpoints: {
     youtube: {
-      info: `${API_BASE_URL}/api/youtube/info`,
-      download: `${API_BASE_URL}/api/youtube/download`,
-      stream: `${API_BASE_URL}/api/youtube/stream`,
-      formats: `${API_BASE_URL}/api/youtube/formats`
+      info: `${API_BASE_URL}/youtube/info`,
+      download: `${API_BASE_URL}/youtube/download`,
+      stream: `${API_BASE_URL}/youtube/stream`,
+      formats: `${API_BASE_URL}/youtube/formats`
     },
     instagram: {
-      info: `${API_BASE_URL}/api/instagram/info`,
-      download: `${API_BASE_URL}/api/instagram/download`
+      info: `${API_BASE_URL}/instagram/info`,
+      download: `${API_BASE_URL}/instagram/download`
     }
   }
 }

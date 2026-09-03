@@ -44,7 +44,7 @@ async def health():
 async def test():
     return {"test": "success"}
 
-@app.post("/api/youtube/info")
+@app.post("/youtube/info")
 async def youtube_info(url: str = None):
     """Get YouTube video info"""
     if not url:
